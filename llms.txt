@@ -1,39 +1,52 @@
-# SRC-101 | Bitcoin Universe Protocol Reference
+# SRC-101
 
-> Human docs: index.html
-> Field reference: reference.html
-> Network: Bitcoin
-> Classification: Bitcoin Stamps name service
+> A Bitcoin Stamps naming and record protocol with lifecycle operations.
 
-## Summary
+## Chain and carrier
 
-A Bitcoin Stamps naming protocol designed to create durable, address-linked name records that are kept separate from ordinary BTC holdings.
+- Chain: Bitcoin
+- Carrier: Bitcoin Stamps name records
+
+## Overview
+
+SRC-101 is a name and record system in the Bitcoin Stamps ecosystem. Its active reference indexer validates a closed set of JSON fields for deploy, mint, transfer, renew, and setrecord operations.
 
 ## State model
 
-Stamped name records indexed under the SRC-101 rules, with protocol-specific activation and carrier requirements.
+A deployed namespace is referenced by its deploy transaction hash. Token IDs are base64-encoded labels, and owner state has a renewal and record lifecycle. Exact field sets are operation-specific.
 
 ## Lifecycle
 
-1. Choose name
-2. Create stamp record
-3. Confirm index
-4. Resolve ownership
+1. Deploy namespace settings and recipient rules.
+2. Mint a base64-encoded token ID to an allowed recipient.
+3. Transfer the name record by deploy hash and token ID.
+4. Renew expiry or set signed BTC and ETH record data.
 
-## Operations
+## Rules
 
-- Register: Creates a name record under the active SRC-101 rules.
-- Resolve: Looks up the indexed record and its current address association.
-- Transfer: Uses the protocol's supported ownership-transfer path rather than a generic inscription send.
-- Index: Validates the record against the active Stamps implementation.
+- The reference parser requires p = src-101 and exact operation-specific field sets.
+- p and op are normalized to uppercase by the active processor after parsing.
+- tick is normalized to lowercase and a SHA3-256 ticker hash is calculated.
+- tokenid is base64-encoded, normalized, and rejected when it contains forbidden special characters.
+- deploy hash is required for mint, transfer, renew, and setrecord.
+- Mint requires a duration in years, called dua, and has recipient, coefficient, and signature constraints.
 
-## Safety
+## Field reference
 
-1. SRC-101 is an evolving protocol. Do not copy a generic JSON example into a transaction and assume it is valid.
-2. Verify activation height, carrier type, and current indexer release before integration.
-3. Keep name assets separate from ordinary BTC UTXO workflows to avoid accidental handling or transfer errors.
+- p (string, required: yes): src-101, then normalized by the processor.
+- op (string, required: yes): deploy, mint, transfer, renew, or setrecord.
+- hash (transaction hash, required: non-deploy): Deploy transaction reference.
+- tokenid (base64 string or list, required: non-deploy): Normalized base64 name label, maximum 128 characters per value.
+- toaddress (Bitcoin address, required: mint / transfer): Destination must pass Bitcoin address validation.
+- dua (non-negative integer, required: mint / renew): Duration in years.
+- prim (string boolean, required: mint / setrecord): Literal true or false value interpreted by the processor.
+- type / data (record payload, required: setrecord): Signed record update fields.
 
-## Sources
+## Primary sources
 
+- Stampchain BTC Stamps reference indexer: https://github.com/stampchain-io/btc_stamps/blob/main/indexer/src/index_core/src101.py
 - Stampchain FAQ: https://stampchain.io/faq
-- Bitcoin Stamps indexer: https://github.com/stampchain-io/btc_stamps
+
+## Operational caution
+
+SRC-101 has strict, revision-sensitive field validation. Generate payloads from the active parser contract and regression-test them before using real names.

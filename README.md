@@ -1,24 +1,35 @@
 # SRC-101 documentation
 
-A standalone Bitcoin Universe documentation site for SRC-101.
+Bitcoin Universe documentation for SRC-101 on Bitcoin.
 
-## Included
+## What this covers
 
-- `index.html`: visual protocol overview, lifecycle, payload examples, and safety guidance
-- `reference.html`: field reference and integration checklist
-- `llms.txt`: compact machine-readable protocol summary
+SRC-101 is a name and record system in the Bitcoin Stamps ecosystem. Its active reference indexer validates a closed set of JSON fields for deploy, mint, transfer, renew, and setrecord operations.
+
+## State model
+
+A deployed namespace is referenced by its deploy transaction hash. Token IDs are base64-encoded labels, and owner state has a renewal and record lifecycle. Exact field sets are operation-specific.
+
+## Documentation site
+
+- Overview: [index.html](index.html)
+- Field reference: [reference.html](reference.html)
+- Build and verification playbook: [guide.html](guide.html)
+
+## Core rules
+
+- The reference parser requires p = src-101 and exact operation-specific field sets.
+- p and op are normalized to uppercase by the active processor after parsing.
+- tick is normalized to lowercase and a SHA3-256 ticker hash is calculated.
+- tokenid is base64-encoded, normalized, and rejected when it contains forbidden special characters.
+- deploy hash is required for mint, transfer, renew, and setrecord.
+- Mint requires a duration in years, called dua, and has recipient, coefficient, and signature constraints.
+
+## Source material
+
+- [Stampchain BTC Stamps reference indexer](https://github.com/stampchain-io/btc_stamps/blob/main/indexer/src/index_core/src101.py)
+- [Stampchain FAQ](https://stampchain.io/faq)
 
 ## Scope
 
-A Bitcoin Stamps naming protocol designed to create durable, address-linked name records that are kept separate from ordinary BTC holdings.
-
-This repository is a navigational integration guide. The linked primary sources and their active reference implementations are authoritative.
-
-## Sources
-
-- [Stampchain FAQ](https://stampchain.io/faq)
-- [Bitcoin Stamps indexer](https://github.com/stampchain-io/btc_stamps)
-
-## Local preview
-
-Open `index.html` in a browser, or serve this directory with any static file server. GitHub Pages can publish directly from the repository root.
+SRC-101 has strict, revision-sensitive field validation. Generate payloads from the active parser contract and regression-test them before using real names.
