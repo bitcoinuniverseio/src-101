@@ -1,0 +1,39 @@
+# SRC-101 | Bitcoin Universe Protocol Reference
+
+> Human docs: index.html
+> Field reference: reference.html
+> Network: Bitcoin
+> Classification: Bitcoin Stamps name service
+
+## Summary
+
+A Bitcoin Stamps naming protocol designed to create durable, address-linked name records that are kept separate from ordinary BTC holdings.
+
+## State model
+
+Stamped name records indexed under the SRC-101 rules, with protocol-specific activation and carrier requirements.
+
+## Lifecycle
+
+1. Choose name
+2. Create stamp record
+3. Confirm index
+4. Resolve ownership
+
+## Operations
+
+- Register: Creates a name record under the active SRC-101 rules.
+- Resolve: Looks up the indexed record and its current address association.
+- Transfer: Uses the protocol's supported ownership-transfer path rather than a generic inscription send.
+- Index: Validates the record against the active Stamps implementation.
+
+## Safety
+
+1. SRC-101 is an evolving protocol. Do not copy a generic JSON example into a transaction and assume it is valid.
+2. Verify activation height, carrier type, and current indexer release before integration.
+3. Keep name assets separate from ordinary BTC UTXO workflows to avoid accidental handling or transfer errors.
+
+## Sources
+
+- Stampchain FAQ: https://stampchain.io/faq
+- Bitcoin Stamps indexer: https://github.com/stampchain-io/btc_stamps
