@@ -2,6 +2,10 @@
 
 Bitcoin Universe documentation for SRC-101 on Bitcoin.
 
+## Combined documentation home
+
+This SRC-101 repository is kept as a nested local checkout inside the [Stamps, SRC-20 and SRC-101 documentation set](https://bitcoinuniverse.github.io/src-20/) and publishes independently at [bitcoinuniverse.github.io/src-101](https://bitcoinuniverse.github.io/src-101/). SRC-101 remains a distinct protocol reference. Its field, operation, and lifecycle rules should not be inferred from the parent SRC-20 materials.
+
 ## What this covers
 
 SRC-101 is a name and record system in the Bitcoin Stamps ecosystem. Its active reference indexer validates a closed set of JSON fields for deploy, mint, transfer, renew, and setrecord operations.
@@ -12,9 +16,9 @@ A deployed namespace is referenced by its deploy transaction hash. Token IDs are
 
 ## Documentation site
 
-- Overview: [index.html](index.html)
-- Field reference: [reference.html](reference.html)
-- Build and verification playbook: [guide.html](guide.html)
+- Overview: [bitcoinuniverse.github.io/src-101](https://bitcoinuniverse.github.io/src-101/)
+- Field reference: [reference.html](https://bitcoinuniverse.github.io/src-101/reference.html)
+- Build and verification playbook: [guide.html](https://bitcoinuniverse.github.io/src-101/guide.html)
 
 ## Core rules
 
@@ -29,6 +33,7 @@ A deployed namespace is referenced by its deploy transaction hash. Token IDs are
 
 - [Stampchain BTC Stamps reference indexer](https://github.com/stampchain-io/btc_stamps/blob/main/indexer/src/index_core/src101.py)
 - [Stampchain FAQ](https://stampchain.io/faq)
+- [Stamps official press-kit assets](https://github.com/stampchain-io/stampchain.io/tree/dev/static/img/presskit)
 
 ## Scope
 

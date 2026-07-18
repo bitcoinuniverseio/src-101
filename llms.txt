@@ -2,6 +2,10 @@
 
 > A Bitcoin Stamps naming and record protocol with lifecycle operations.
 
+## Documentation location
+
+This repository is kept as a nested local checkout at <code>src-101-docs</code> inside the Stamps, SRC-20 and SRC-101 documentation set. Its live site is https://bitcoinuniverse.github.io/src-101/ and its combined documentation home is https://bitcoinuniverse.github.io/src-20/. Keep SRC-101 parser rules separate from SRC-20 protocol and transaction-profile guidance.
+
 ## Chain and carrier
 
 - Chain: Bitcoin
@@ -46,6 +50,7 @@ A deployed namespace is referenced by its deploy transaction hash. Token IDs are
 
 - Stampchain BTC Stamps reference indexer: https://github.com/stampchain-io/btc_stamps/blob/main/indexer/src/index_core/src101.py
 - Stampchain FAQ: https://stampchain.io/faq
+- Stamps official press-kit assets: https://github.com/stampchain-io/stampchain.io/tree/dev/static/img/presskit
 
 ## Operational caution
 

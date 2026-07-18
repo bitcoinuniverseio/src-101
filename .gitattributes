@@ -1,0 +1,2 @@
+# Preserve the official Stamps SVG exactly as distributed upstream.
+assets/stampchain-logo-480.svg -whitespace
