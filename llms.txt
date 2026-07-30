@@ -1,57 +1,32 @@
 # SRC-101
 
-> A Bitcoin Stamps naming and record protocol with lifecycle operations.
+> SRC-101 brings namespaces, unique names, renewals, transfers, and records into the Bitcoin Stamps ecosystem.
 
-## Documentation location
+## Public experience
 
-This repository is kept as a nested local checkout at <code>src-101-docs</code> inside the Stamps, SRC-20 and SRC-101 documentation set. Its live site is https://bitcoinuniverse.github.io/src-101/ and its combined documentation home is https://bitcoinuniverse.github.io/src-20/. Keep SRC-101 parser rules separate from SRC-20 protocol and transaction-profile guidance.
+- Home: https://bitcoinuniverse.github.io/src-101/
+- Discover: https://bitcoinuniverse.github.io/src-101/reference.html
+- Get started: https://bitcoinuniverse.github.io/src-101/guide.html
+- Bitcoin Universe: https://inscribe.bitcoinuniverse.io/
 
-## Chain and carrier
+## The experience
 
-- Chain: Bitcoin
-- Carrier: Bitcoin Stamps name records
+- Discover: Explore namespaces and the names that communities build around them.
+- Own: Mint an available name and follow its ownership and renewal timeline.
+- Connect: Associate supported records and carry the name into new experiences.
 
-## Overview
+## In plain language
 
-SRC-101 is a name and record system in the Bitcoin Stamps ecosystem. Its active reference indexer validates a closed set of JSON fields for deploy, mint, transfer, renew, and setrecord operations.
+- Namespaces: A deployment establishes the space where SRC-101 names can live.
+- Names: Each name uses an encoded token identity tied to its namespace.
+- Lifecycle: Mint, transfer, renew, and record updates create the name’s timeline.
+- Records: Supported signed data can connect a name to useful destinations.
 
-## State model
+## User safety
 
-A deployed namespace is referenced by its deploy transaction hash. Token IDs are base64-encoded labels, and owner state has a renewal and record lifecycle. Exact field sets are operation-specific.
+Names can be visually similar, renewal timing matters, and record updates affect where a name points. Verify the namespace, exact name, recipient, duration, and signed data before approval.
 
-## Lifecycle
+## Community resources
 
-1. Deploy namespace settings and recipient rules.
-2. Mint a base64-encoded token ID to an allowed recipient.
-3. Transfer the name record by deploy hash and token ID.
-4. Renew expiry or set signed BTC and ETH record data.
-
-## Rules
-
-- The reference parser requires p = src-101 and exact operation-specific field sets.
-- p and op are normalized to uppercase by the active processor after parsing.
-- tick is normalized to lowercase and a SHA3-256 ticker hash is calculated.
-- tokenid is base64-encoded, normalized, and rejected when it contains forbidden special characters.
-- deploy hash is required for mint, transfer, renew, and setrecord.
-- Mint requires a duration in years, called dua, and has recipient, coefficient, and signature constraints.
-
-## Field reference
-
-- p (string, required: yes): src-101, then normalized by the processor.
-- op (string, required: yes): deploy, mint, transfer, renew, or setrecord.
-- hash (transaction hash, required: non-deploy): Deploy transaction reference.
-- tokenid (base64 string or list, required: non-deploy): Normalized base64 name label, maximum 128 characters per value.
-- toaddress (Bitcoin address, required: mint / transfer): Destination must pass Bitcoin address validation.
-- dua (non-negative integer, required: mint / renew): Duration in years.
-- prim (string boolean, required: mint / setrecord): Literal true or false value interpreted by the processor.
-- type / data (record payload, required: setrecord): Signed record update fields.
-
-## Primary sources
-
-- Stampchain BTC Stamps reference indexer: https://github.com/stampchain-io/btc_stamps/blob/main/indexer/src/index_core/src101.py
-- Stampchain FAQ: https://stampchain.io/faq
-- Stamps official press-kit assets: https://github.com/stampchain-io/stampchain.io/tree/dev/static/img/presskit
-
-## Operational caution
-
-SRC-101 has strict, revision-sensitive field validation. Generate payloads from the active parser contract and regression-test them before using real names.
+- Explore Bitcoin Stamps: https://stampchain.io/
+- Visit the Stamps FAQ: https://stampchain.io/faq

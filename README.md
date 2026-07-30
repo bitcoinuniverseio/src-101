@@ -1,40 +1,32 @@
-# SRC-101 documentation
+# SRC-101
 
-Bitcoin Universe documentation for SRC-101 on Bitcoin.
+## Claim a name. Build its story.
 
-## Combined documentation home
+SRC-101 brings namespaces, unique names, renewals, transfers, and records into the Bitcoin Stamps ecosystem.
 
-This SRC-101 repository is kept as a nested local checkout inside the [Stamps, SRC-20 and SRC-101 documentation set](https://bitcoinuniverse.github.io/src-20/) and publishes independently at [bitcoinuniverse.github.io/src-101](https://bitcoinuniverse.github.io/src-101/). SRC-101 remains a distinct protocol reference. Its field, operation, and lifecycle rules should not be inferred from the parent SRC-20 materials.
+SRC-101 is part of the growing Bitcoin Universe—an onchain landscape for creators, collectors, and communities who want their digital stories to last.
 
-## What this covers
+## Step inside
 
-SRC-101 is a name and record system in the Bitcoin Stamps ecosystem. Its active reference indexer validates a closed set of JSON fields for deploy, mint, transfer, renew, and setrecord operations.
+- [Experience the story](https://bitcoinuniverse.github.io/src-101/)
+- [Discover how it works](https://bitcoinuniverse.github.io/src-101/reference.html)
+- [Start your journey](https://bitcoinuniverse.github.io/src-101/guide.html)
+- [Open Bitcoin Universe](https://inscribe.bitcoinuniverse.io/)
 
-## State model
+## What makes it special
 
-A deployed namespace is referenced by its deploy transaction hash. Token IDs are base64-encoded labels, and owner state has a renewal and record lifecycle. Exact field sets are operation-specific.
+- **Discover:** Explore namespaces and the names that communities build around them.
+- **Own:** Mint an available name and follow its ownership and renewal timeline.
+- **Connect:** Associate supported records and carry the name into new experiences.
 
-## Documentation site
+## A clear onchain promise
 
-- Overview: [bitcoinuniverse.github.io/src-101](https://bitcoinuniverse.github.io/src-101/)
-- Field reference: [reference.html](https://bitcoinuniverse.github.io/src-101/reference.html)
-- Build and verification playbook: [guide.html](https://bitcoinuniverse.github.io/src-101/guide.html)
+SRC-101 names belong to a namespace and carry an ownership lifecycle. They can move, renew, and connect to signed records while their history remains anchored through Bitcoin Stamps.
 
-## Core rules
+## Stay in control
 
-- The reference parser requires p = src-101 and exact operation-specific field sets.
-- p and op are normalized to uppercase by the active processor after parsing.
-- tick is normalized to lowercase and a SHA3-256 ticker hash is calculated.
-- tokenid is base64-encoded, normalized, and rejected when it contains forbidden special characters.
-- deploy hash is required for mint, transfer, renew, and setrecord.
-- Mint requires a duration in years, called dua, and has recipient, coefficient, and signature constraints.
+Names can be visually similar, renewal timing matters, and record updates affect where a name points. Verify the namespace, exact name, recipient, duration, and signed data before approval.
 
-## Source material
+---
 
-- [Stampchain BTC Stamps reference indexer](https://github.com/stampchain-io/btc_stamps/blob/main/indexer/src/index_core/src101.py)
-- [Stampchain FAQ](https://stampchain.io/faq)
-- [Stamps official press-kit assets](https://github.com/stampchain-io/stampchain.io/tree/dev/static/img/presskit)
-
-## Scope
-
-SRC-101 has strict, revision-sensitive field validation. Generate payloads from the active parser contract and regression-test them before using real names.
+Presented by [Bitcoin Universe](https://github.com/bitcoinuniverse).
