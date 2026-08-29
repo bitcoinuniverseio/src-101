@@ -4,7 +4,7 @@
 
 SRC-101 brings namespaces, unique names, renewals, transfers, and records into the Bitcoin Stamps ecosystem.
 
-SRC-101 is part of the growing Bitcoin Universe—an onchain landscape for creators, collectors, and communities who want their digital stories to last.
+SRC-101 is part of the growing Bitcoin Universe, an onchain landscape for creators, collectors, and communities who want their digital stories to last.
 
 ## Step inside
 
