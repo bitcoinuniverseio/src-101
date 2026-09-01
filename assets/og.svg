@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="SRC-101, the name registry carried by Bitcoin Stamps">
+  <title>SRC-101</title>
+  <desc>A register page showing one active name entry and one expired name entry.</desc>
+  <rect width="1200" height="630" fill="#fbfbf9"/>
+  <rect x="0" y="0" width="1200" height="10" fill="#0d5c4d"/>
+
+  <text x="80" y="112" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="22" letter-spacing="4" fill="#0d5c4d">BITCOIN MAINNET / NAME REGISTRY / BITCOIN STAMPS CARRIER</text>
+  <text x="80" y="196" font-family="system-ui, Segoe UI, Roboto, Arial, sans-serif" font-size="70" font-weight="700" fill="#15181d">SRC-101</text>
+  <text x="80" y="252" font-family="system-ui, Segoe UI, Roboto, Arial, sans-serif" font-size="32" fill="#545a65">A name registry written into Bitcoin transaction outputs</text>
+
+  <rect x="80" y="316" width="1040" height="112" rx="4" fill="#ffffff" stroke="#d2d5d0" stroke-width="2"/>
+  <rect x="80" y="316" width="8" height="112" fill="#0d5c4d"/>
+  <text x="118" y="360" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="34" font-weight="700" fill="#15181d">satoshi</text>
+  <text x="118" y="396" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="19" fill="#545a65">owner bc1q...  expires 2028-11-14  records btc, eth  primary yes</text>
+  <text x="1000" y="360" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="19" font-weight="700" letter-spacing="2" fill="#0d5c4d">ACTIVE</text>
+
+  <rect x="80" y="446" width="1040" height="112" rx="4" fill="#efeee9" stroke="#d2d5d0" stroke-width="2"/>
+  <rect x="80" y="446" width="8" height="112" fill="#6f6a60"/>
+  <text x="118" y="490" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="34" font-weight="700" fill="#6f6a60">lapsed</text>
+  <text x="118" y="526" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="19" fill="#6f6a60">expired 2026-03-02  renewal window closed  mintable again</text>
+  <text x="972" y="490" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="19" font-weight="700" letter-spacing="2" fill="#6f6a60">EXPIRED</text>
+
+  <text x="80" y="600" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="18" letter-spacing="2" fill="#545a65">SPECIFICATION / GUIDE / REFERENCE / TEST VECTORS / PAYLOAD VALIDATOR</text>
+</svg>

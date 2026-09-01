@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="SRC-101 register entry">
+  <title>SRC-101</title>
+  <rect width="32" height="32" rx="4" fill="#fbfbf9"/>
+  <rect x="3" y="4" width="26" height="24" rx="2" fill="#ffffff" stroke="#d2d5d0" stroke-width="1.2"/>
+  <rect x="3" y="4" width="3.4" height="24" rx="1.4" fill="#0d5c4d"/>
+  <rect x="9.5" y="8.5" width="15" height="3.6" rx="1" fill="#15181d"/>
+  <rect x="9.5" y="15" width="12.5" height="2" rx="1" fill="#6f6a60"/>
+  <rect x="9.5" y="19" width="14.5" height="2" rx="1" fill="#6f6a60"/>
+  <rect x="9.5" y="23" width="8.5" height="2" rx="1" fill="#6f6a60"/>
+</svg>
