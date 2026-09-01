@@ -4,7 +4,7 @@
   "name": "SRC-101",
   "classification": "protocol",
   "repository": "bitcoinuniverseio/src-101",
-  "documentationUrl": "https://docs.bitcoinuniverse.io/protocols/src-101/",
+  "documentationUrl": "https://docs.bitcoinuniverse.io/protocols/src101/",
   "docsRoot": ".",
   "sourceRef": "main",
   "lifecycle": "experimental",
