@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SRC-101 changelog</title>
+<meta name="description" content="Protocol changes by block height and document version history for the SRC-101 documentation.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/src-101/changelog.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="search-index" href="search-index.json">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SRC-101 changelog">
+<meta property="og:description" content="Protocol changes by block height and document version history for the SRC-101 documentation.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/src-101/changelog.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/src-101/assets/og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<script>try{var t=localStorage.getItem('src101-docs-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 26 30" aria-hidden="true" focusable="false">
+        <rect x="1" y="1" width="24" height="28" rx="2" fill="var(--card)" stroke="var(--rule)" stroke-width="1.2"/>
+        <rect x="1" y="1" width="3.2" height="28" rx="1.4" fill="var(--accent)"/>
+        <rect x="7.5" y="6" width="13" height="3.4" rx="1" fill="var(--ink)"/>
+        <rect x="7.5" y="13" width="11" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="17.5" width="13" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="22" width="7.5" height="1.9" rx=".9" fill="var(--lapsed)"/>
+      </svg>
+      <span>SRC-101</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="specification.html">Specification</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="reference.html">Reference</a></li>
+        <li><a href="vectors.html">Test vectors</a></li>
+        <li><a href="validator.html">Validator</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <form class="search" id="site-search" role="search" hidden>
+        <label class="visually-hidden" for="q">Search the SRC-101 documentation</label>
+        <input class="search-input" id="q" type="search" placeholder="Search (press /)" autocomplete="off">
+        <ul class="search-results" id="search-results" aria-live="polite"></ul>
+      </form>
+      <button class="theme-toggle" id="theme-toggle" type="button" hidden>Dark</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="hero">
+      <p class="eyebrow">Changelog &middot; Document and protocol</p>
+      <h1>Changelog</h1>
+      <p class="lede">Two histories, kept apart. The protocol changed at specific block heights, and this document changed on specific dates. Conflating them is how stale documentation gets believed.</p>
+    </div>
+
+    <hr class="perf">
+
+    <section class="prose-wide">
+      <h2 id="protocol">Protocol history, by block height</h2>
+      <p>Every height below is a constant in the reference indexer's configuration. Nothing here is a plan or a proposal.</p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>SRC-101 consensus history</caption>
+          <thead><tr><th scope="col">Height</th><th scope="col">Change</th><th scope="col">Effect</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>865000</td>
+              <td>P2WSH chunk collection begins</td>
+              <td>A shared gate, named for SRC-20. It predates SRC-101 entirely, so both carriers are available for the whole life of the protocol</td>
+            </tr>
+            <tr>
+              <td><strong>870652</strong></td>
+              <td>SRC-101 genesis</td>
+              <td>SRC-101 payloads become meaningful. Nothing below this height counts, and no end block was ever defined</td>
+            </tr>
+            <tr>
+              <td><strong>872200</strong></td>
+              <td><code>img</code> becomes optional on <code>mint</code></td>
+              <td>Two changes at once. <code>img</code> leaves the required key set, and <code>mint</code> key matching relaxes from exact to containment, so extra keys become permitted on that one operation. A submitted <code>img</code> is discarded and the URL is derived instead</td>
+            </tr>
+            <tr>
+              <td><strong>940000</strong></td>
+              <td>Output 0's value becomes readable on the P2WSH branch</td>
+              <td>Below this height a P2WSH-carried <code>mint</code> or <code>renew</code> is seen as paying zero and fails with <code>IRV</code>. From it, P2WSH becomes a viable carrier for a paid operation. The indexer's own comment dates the height at approximately March 2026</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <span class="note-title">There is nothing else</span>
+        <p>The list above is complete. SRC-101 has never had a numeric-parsing change like SRC-20's at block 833000, has never had a Counterparty cut-off like SRC-20's at block 796000, and has no scheduled change beyond block 940000. If you read a claim about an SRC-101 activation height that is not in this table, it is not in the reference implementation.</p>
+      </div>
+
+      <h2 id="document">Document history</h2>
+
+      <div class="register">
+        <div class="register-head"><span>Version</span><span>Change</span></div>
+
+        <div class="entry entry-active">
+          <div class="entry-top"><p class="entry-name">2026.09.01</p><span class="entry-state">Current</span></div>
+          <dl class="entry-fields">
+            <div><dt>scope</dt><dd>first grounded edition</dd></div>
+            <div><dt>source</dt><dd>btc_stamps 1.9.3</dd></div>
+            <div><dt>rules</dt><dd>1 to 83, none retired</dd></div>
+            <div><dt>lifecycle</dt><dd>experimental</dd></div>
+          </dl>
+          <p class="small" style="margin:.7rem 0 0">Replaces a short promotional site with a specification, guide, reference, test vectors and a client-side validator. Every normative statement was verified against the enforcing code rather than against secondary descriptions of the protocol. Three claims that circulate about SRC-101 were checked and corrected in the process:</p>
+          <ul class="small" style="margin:.4rem 0 0">
+            <li>The height 940000 is often described as when P2WSH carriage begins for SRC-101. It is not. P2WSH carriage works from 865000; what 940000 changes is whether the decoder reads output 0's value on that branch, which is what mint and renew payments are measured against.</li>
+            <li>SRC-101 is often described as declaring its own Bitcoin and Ethereum address patterns. It declares both and <strong>references neither</strong>. Address validation is delegated to helpers that accept Bech32, which the declared Bitcoin pattern would reject.</li>
+            <li>The Ethereum signing library is often described as verifying the mint <code>sig</code> field. It does not. The mint signature is verified with an ECDSA over SHA-256 check against the namespace whitelist key; the Ethereum library is used only to recover the signer of a <code>setrecord</code> Ethereum record.</li>
+          </ul>
+        </div>
+
+        <div class="entry entry-lapsed">
+          <div class="entry-top"><p class="entry-name">Before 2026.09.01</p><span class="entry-state">Superseded</span></div>
+          <dl class="entry-fields">
+            <div><dt>form</dt><dd>a three-page promotional site</dd></div>
+            <div><dt>grounding</dt><dd>none stated</dd></div>
+            <div><dt>rules</dt><dd>no normative content</dd></div>
+            <div><dt>links</dt><dd>pointed at a hostname that does not resolve</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <h2 id="policy">How this document changes</h2>
+      <ul>
+        <li>Rule numbers are assigned once and never reused. A withdrawn rule keeps its number and is marked withdrawn here.</li>
+        <li>A change to a normative rule always gets an entry above, naming the source that justified it.</li>
+        <li>The document version is a date. It does not track the protocol, which changes only at the heights in the first table.</li>
+        <li>When the reference indexer version changes, the version quoted in the footer of every page changes with it, and any rule whose behaviour moved is listed here.</li>
+      </ul>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2>This site</h2>
+        <ul>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="specification.html">Specification</a></li>
+          <li><a href="guide.html">Guide</a></li>
+          <li><a href="reference.html">Reference</a></li>
+          <li><a href="vectors.html">Test vectors</a></li>
+          <li><a href="validator.html">Payload validator</a></li>
+          <li><a href="changelog.html">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Related protocols</h2>
+        <p><img src="assets/stampchain-logo-480.svg" alt="" width="88" height="22" style="opacity:.75"></p>
+        <ul>
+          <li><a href="https://bitcoinuniverseio.github.io/src-20/">SRC-20, same carrier</a></li>
+          <li><a href="https://github.com/stampchain-io/btc_stamps">Bitcoin Stamps indexer</a></li>
+          <li><a href="https://stampchain.io/">Stampchain explorer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://docs.bitcoinuniverse.io">Documentation portal</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101">This repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101/security/advisories/new">Report a vulnerability</a></li>
+          <li><a href="llms.txt">llms.txt</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon">
+      <p>Document version 2026.09.01. Lifecycle experimental. Rules verified against <code>stampchain-io/btc_stamps</code> 1.9.3.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

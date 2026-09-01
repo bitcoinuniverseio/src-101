@@ -1,18 +1,517 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Get started with SRC-101 — Bitcoin Universe</title>
-  <meta name="description" content="A simple, user-first path for exploring SRC-101 safely.">
-  <meta name="theme-color" content="#09090f">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SRC-101 guide</title>
+<meta name="description" content="A practical walkthrough of SRC-101: choosing a namespace, building each of the five operations, computing what a term costs, reading a result, and what Bitcoin Universe products actually support.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/src-101/guide.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="search-index" href="search-index.json">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SRC-101 guide">
+<meta property="og:description" content="Worked SRC-101 examples with computed byte framing, term pricing, and how to read a result.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/src-101/guide.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/src-101/assets/og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<script>try{var t=localStorage.getItem('src101-docs-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
-<body style="--accent:#ff4d8d;--accent-2:#ffcc70">
-<div class="topbar"><div class="wrap nav"><a class="brand" href="index.html"><span class="brand-mark">101</span><span>SRC-101</span></a><nav class="nav-links" aria-label="Main navigation"><a href="index.html">Home</a><a href="reference.html">Discover</a><a href="guide.html" aria-current="page">Get started</a><a class="nav-cta" href="https://inscribe.bitcoinuniverse.io/">Open Bitcoin Universe ↗</a></nav></div></div>
-<main>
-  <div class="wrap hero compact"><div><div class="eyebrow">Your next onchain moment</div><h1>From curiosity to <span class="gradient">confirmation.</span></h1><p class="lede">You do not need to think like a protocol engineer. Start with the story, understand the transaction, and stay in control of your wallet.</p><div class="actions"><a class="button primary" href="https://inscribe.bitcoinuniverse.io/">Open Bitcoin Universe ↗</a><a class="button secondary" href="reference.html">Discover SRC-101</a></div></div><div class="hero-art"><div class="orbit"><img class="logo-art core" src="assets/stampchain-logo-480.svg" alt=""><span class="spark one">Bitcoin Stamps</span><span class="spark two">lasting culture</span><span class="spark three">onchain history</span></div></div></div>
-  <section><div class="wrap story"><div class="story-copy"><div class="eyebrow">A simple journey</div><h2>Four steps to a confident experience.</h2><p class="lede" style="font-size:18px;margin-top:22px">Every action ends with a real network transaction. Take the time to understand what your wallet shows.</p></div><div class="story-list"><article class="story-item"><b>01</b><div><h3>Choose a namespace</h3><p>Explore its identity, name rules, mint terms, and community before acting.</p></div></article><article class="story-item"><b>02</b><div><h3>Find your name</h3><p>Confirm availability and carefully review the exact displayed name.</p></div></article><article class="story-item"><b>03</b><div><h3>Review ownership details</h3><p>Check the recipient, duration, network fees, and wallet transaction before signing.</p></div></article><article class="story-item"><b>04</b><div><h3>Keep it alive</h3><p>Follow ownership, renewal timing, and record updates with a compatible Stamps service.</p></div></article></div></div></section>
-  <section><div class="wrap spotlight"><div class="eyebrow">Stay in control</div><h2>Your keys. Your review. Your decision.</h2><p>Names can be visually similar, renewal timing matters, and record updates affect where a name points. Verify the namespace, exact name, recipient, duration, and signed data before approval.</p><div class="actions"><a class="button primary" href="https://inscribe.bitcoinuniverse.io/">Explore supported experiences ↗</a></div></div></section>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 26 30" aria-hidden="true" focusable="false">
+        <rect x="1" y="1" width="24" height="28" rx="2" fill="var(--card)" stroke="var(--rule)" stroke-width="1.2"/>
+        <rect x="1" y="1" width="3.2" height="28" rx="1.4" fill="var(--accent)"/>
+        <rect x="7.5" y="6" width="13" height="3.4" rx="1" fill="var(--ink)"/>
+        <rect x="7.5" y="13" width="11" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="17.5" width="13" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="22" width="7.5" height="1.9" rx=".9" fill="var(--lapsed)"/>
+      </svg>
+      <span>SRC-101</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="specification.html">Specification</a></li>
+        <li><a href="guide.html" aria-current="page">Guide</a></li>
+        <li><a href="reference.html">Reference</a></li>
+        <li><a href="vectors.html">Test vectors</a></li>
+        <li><a href="validator.html">Validator</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <form class="search" id="site-search" role="search" hidden>
+        <label class="visually-hidden" for="q">Search the SRC-101 documentation</label>
+        <input class="search-input" id="q" type="search" placeholder="Search (press /)" autocomplete="off">
+        <ul class="search-results" id="search-results" aria-live="polite"></ul>
+      </form>
+      <button class="theme-toggle" id="theme-toggle" type="button" hidden>Dark</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="hero">
+      <p class="eyebrow">Practical &middot; Worked examples &middot; Byte counts computed, not estimated</p>
+      <h1>Working with SRC-101</h1>
+      <p class="lede">This page walks through the five operations with complete payloads, shows exactly how many bytes each one occupies on chain, works out what a term costs, and explains how to tell whether your registration actually happened. Every example is constructed for illustration. The addresses and the public key are well formed and pass every checksum, because a broken example teaches the wrong lesson, but they are derived from fixed text rather than from any key anyone holds. No transaction hash here names a transaction that exists.</p>
+    </div>
+
+    <div class="toc">
+      <p>Contents</p>
+      <ol>
+        <li><a href="#before">Before you spend anything</a></li>
+        <li><a href="#deploy">Opening a namespace</a></li>
+        <li><a href="#mint">Claiming a name</a></li>
+        <li><a href="#pricing">What a term costs</a></li>
+        <li><a href="#records">Pointing a name somewhere</a></li>
+        <li><a href="#transfer">Handing a name on</a></li>
+        <li><a href="#renew">Keeping a name</a></li>
+        <li><a href="#framing">Byte framing and outputs</a></li>
+        <li><a href="#reading">Reading a result</a></li>
+        <li><a href="#support">What Bitcoin Universe supports</a></li>
+        <li><a href="#safety">Safety</a></li>
+      </ol>
+    </div>
+
+    <hr class="perf">
+
+    <section id="before" class="prose-wide">
+      <h2>1. Before you spend anything</h2>
+      <p>Four things decide whether an SRC-101 transaction does what you meant, and all four are settled before you sign.</p>
+      <div class="grid-2">
+        <div class="panel">
+          <h4>The namespace</h4>
+          <p class="small">A 64-character transaction hash. It fixes the price list, the addresses that may collect payment, the term granularity, and the mint window. There is no global list of namespaces in the protocol; you have to be given the hash.</p>
+        </div>
+        <div class="panel">
+          <h4>The exact key set</h4>
+          <p class="small">Four of the five operations reject a payload with a single extra or missing key, and reject it silently. Run your payload through the <a href="validator.html">validator</a> before you build the transaction.</p>
+        </div>
+        <div class="panel">
+          <h4>The payment output</h4>
+          <p class="small">Output 0 must pay one of the namespace's recipient addresses, and must pay at least the computed amount. One satoshi short is a failure with status <code>IRV</code>, and the fee is still spent.</p>
+        </div>
+        <div class="panel">
+          <h4>The name, decoded</h4>
+          <p class="small">Names are compared after Base64 decoding and lower-casing. Confirm what your Base64 actually decodes to before you pay for it.</p>
+        </div>
+      </div>
+
+      <div class="note note-warn">
+        <span class="note-title">Two ways to lose money quietly</span>
+        <p>Both are specific to SRC-101 and neither exists in SRC-20. First, a malformed key set is <strong>excluded</strong>: your transaction confirms, your fee is spent, and no record of an attempt exists anywhere. Second, a multi-name mint <strong>drops taken names and proceeds</strong>: you pay for what you asked for and receive only the names that were free. Neither produces a warning.</p>
+      </div>
+    </section>
+
+    <section id="deploy" class="prose-wide">
+      <h2>2. Opening a namespace</h2>
+      <p>A deploy is the largest payload in the protocol and the only one with no <code>hash</code>. All sixteen keys are mandatory.</p>
+
+      <pre><code>{
+  "p": "src-101",
+  "op": "DEPLOY",
+  "root": "btc",
+  "name": "bitnames",
+  "tick": "bitname",
+  "lim": "1",
+  "owner": "14caKuhoxA2wCj7JYjVJhgsuxTsbu5rzch",
+  "rec": ["bc1qs2x9wz22tasf8pfejlcc3e8yhnzhv9qs2kgwls"],
+  "pri": { "0": 200000, "3": 2000000, "4": 800000 },
+  "desc": "Bitcoin name registry",
+  "mintstart": "1732924800",
+  "mintend": "0",
+  "wla": "02bb9e14cd42f6487e94071cb25fe5bd6f42753de771be11d21c6a80b5f08cf4a4",
+  "imglp": "https://names.example/i/",
+  "imgf": "png",
+  "idua": "1"
+}</code></pre>
+
+      <div class="table-scroll">
+        <table>
+          <caption>What each deploy field actually does</caption>
+          <thead><tr><th scope="col">Field</th><th scope="col">Effect</th></tr></thead>
+          <tbody>
+            <tr><td><code>root</code></td><td>Labels the namespace. Shorter than 32 characters, no special characters. Not used in any check</td></tr>
+            <tr><td><code>name</code></td><td>Human-readable namespace name. Shorter than 32, no special characters</td></tr>
+            <tr><td><code>tick</code></td><td>Shorter than 32. Lower-cased and hashed with SHA3-256 into a stored <code>tick_hash</code></td></tr>
+            <tr><td><code>lim</code></td><td><strong>Not a limit.</strong> Only a presence sentinel. Must be greater than zero or the namespace is unusable</td></tr>
+            <tr><td><code>owner</code></td><td>Stored. Not consulted by any authorisation or payment check</td></tr>
+            <tr><td><code>rec</code></td><td>The addresses that may collect mint and renew payments. Order is not preserved</td></tr>
+            <tr><td><code>pri</code></td><td>Price in satoshis per decoded name length. The key <code>0</code> is the fallback for any other length</td></tr>
+            <tr><td><code>desc</code></td><td>Free text, stored, never validated</td></tr>
+            <tr><td><code>mintstart</code></td><td>Unix seconds. Minting is allowed when the block timestamp is at least this</td></tr>
+            <tr><td><code>mintend</code></td><td>Unix seconds. Zero means no end, stored as 18446744073709551615</td></tr>
+            <tr><td><code>wla</code></td><td>Compressed secp256k1 public key. Signs discount authorisations for mints</td></tr>
+            <tr><td><code>imglp</code></td><td>Image URL prefix. Shorter than 255</td></tr>
+            <tr><td><code>imgf</code></td><td>Image file extension. Shorter than 32</td></tr>
+            <tr><td><code>idua</code></td><td>Term granularity in years. Every requested term is rounded up to a multiple of this</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note note-warn">
+        <span class="note-title">Two ways to deploy a namespace nobody can use</span>
+        <p>Setting <code>lim</code> to <code>"0"</code> makes every later operation fail with <code>ND</code>, because the namespace lookup treats a zero limit as "not found". Setting <code>idua</code> to <code>"0"</code> makes every mint and renew fail with <code>ITID</code>, because the term rounding divides by it. Neither is caught at deploy time. The deploy is recorded as valid and the namespace is dead.</p>
+      </div>
+
+      <p>Also worth knowing before you deploy: <strong>you cannot mint in the same block</strong>. The in-block namespace lookup cannot resolve a namespace deployed in that same block, so a mint in the deploy's own block fails with <code>ND</code>. Wait for a confirmation.</p>
+    </section>
+
+    <section id="mint" class="prose-wide">
+      <h2>3. Claiming a name</h2>
+      <p>A mint at block 872200 or above. The <code>tokenid</code> value <code>c2F0b3NoaQ==</code> is Base64 for <code>satoshi</code>.</p>
+
+      <pre><code>{
+  "p": "src-101",
+  "op": "MINT",
+  "hash": "3a7f1c8e0b45d29a6f13e874c05b9d2e6a8f04713bc9e25d8a06f1c34b7e9c19",
+  "toaddress": "bc1qs2x9wz22tasf8pfejlcc3e8yhnzhv9qs2kgwls",
+  "tokenid": ["c2F0b3NoaQ=="],
+  "dua": "2",
+  "prim": "true",
+  "sig": "",
+  "coef": "1000"
+}</code></pre>
+
+      <p>Five details in that payload are easy to get wrong:</p>
+      <ul>
+        <li><code>tokenid</code> is a <strong>list</strong> even for one name. The string form is rejected with <code>ITT</code>.</li>
+        <li><code>prim</code> is the <strong>string</strong> <code>"true"</code>. The JSON boolean <code>true</code> discards the whole payload.</li>
+        <li><code>sig</code> is present but empty. It is mandatory below block 872200 and, if you want the payload to work at every height, worth keeping.</li>
+        <li><code>coef</code> is <code>"1000"</code>, meaning full price. Any value below 1000 is ignored unless <code>sig</code> proves it.</li>
+        <li><code>toaddress</code> is where the name goes, and it need not be you. Output 0 is where the money goes, and that must be a namespace recipient.</li>
+      </ul>
+
+      <p>Below block 872200 the same mint additionally required an <code>img</code> list, and the entries had to match the derived URLs exactly:</p>
+      <pre><code>  "img": ["https://names.example/i/satoshi.png"],</code></pre>
+      <p>At and above 872200 an <code>img</code> you supply is discarded and the derived value is written instead, so there is no reason to include it.</p>
+
+      <h3>Minting several names at once</h3>
+      <pre><code>  "tokenid": ["c2F0b3NoaQ==", "Yml0Y29pbg==", "bGFwc2Vk"],</code></pre>
+      <p>The three decode to <code>satoshi</code>, <code>bitcoin</code> and <code>lapsed</code>. If <code>bitcoin</code> is already held with a live expiry, it is dropped and the other two are minted. The required payment is computed over the <strong>full submitted list</strong>, before the drop, so you pay for three and receive two. If all three were taken you would get status <code>DM</code> and nothing at all.</p>
+    </section>
+
+    <section id="pricing" class="prose-wide">
+      <h2>4. What a term costs</h2>
+      <p>The arithmetic is short and entirely deterministic. Using the deploy above, whose <code>pri</code> is <code>{"0": 200000, "3": 2000000, "4": 800000}</code> and whose <code>idua</code> is 1:</p>
+
+      <figure>
+        <div class="diagram-scroll">
+          <svg viewBox="0 0 900 268" role="img" aria-labelledby="pr-title pr-desc" preserveAspectRatio="xMidYMid meet" style="min-width:620px">
+            <title id="pr-title">How a mint payment is computed</title>
+            <desc id="pr-desc">The requested term is rounded up to a multiple of the namespace granularity, giving a number of rounds. Each name is priced by its decoded length, defaulting to the zero-length entry. The sum is multiplied by the rounds, then by the effective coefficient divided by one thousand.</desc>
+
+            <rect x="14" y="18" width="200" height="58" rx="4" class="d-fill-card d-stroke" stroke-width="1.4"/>
+            <text x="30" y="42" class="d-text-mono" font-weight="700">dua requested</text>
+            <text x="30" y="62" class="d-text-soft">rounded up to a multiple of idua</text>
+
+            <path d="M214 47 H262" class="d-stroke-accent" stroke-width="2" fill="none" marker-end="url(#pa)"/>
+
+            <rect x="266" y="18" width="180" height="58" rx="4" class="d-fill-card d-stroke" stroke-width="1.4"/>
+            <text x="282" y="42" class="d-text-mono" font-weight="700">rounds</text>
+            <text x="282" y="62" class="d-text-soft">rounded dua divided by idua</text>
+
+            <rect x="14" y="102" width="432" height="58" rx="4" class="d-fill-card d-stroke" stroke-width="1.4"/>
+            <text x="30" y="126" class="d-text-mono" font-weight="700">sum of price by decoded name length</text>
+            <text x="30" y="146" class="d-text-soft">pri entry for that length, or the pri entry keyed 0, else status IRL</text>
+
+            <path d="M446 131 H520 V80" class="d-stroke-accent" stroke-width="2" fill="none" marker-end="url(#pa)"/>
+            <path d="M446 47 H520" class="d-stroke-accent" stroke-width="2" fill="none"/>
+
+            <rect x="524" y="52" width="180" height="58" rx="4" class="d-fill-card d-stroke" stroke-width="1.4"/>
+            <rect x="524" y="52" width="5" height="58" rx="2" class="d-fill-accent"/>
+            <text x="542" y="76" class="d-text-mono" font-weight="700">required</text>
+            <text x="542" y="96" class="d-text-soft">sum times rounds</text>
+
+            <path d="M614 110 V152" class="d-stroke-accent" stroke-width="2" fill="none" marker-end="url(#pa)"/>
+
+            <rect x="470" y="156" width="290" height="58" rx="4" class="d-fill-card d-stroke" stroke-width="1.4"/>
+            <text x="486" y="180" class="d-text-mono" font-weight="700">times coefficient over 1000</text>
+            <text x="486" y="200" class="d-text-soft">1000 unless a valid sig proves a lower coef</text>
+
+            <path d="M615 214 V244" class="d-stroke-accent" stroke-width="2" fill="none" marker-end="url(#pa)"/>
+            <text x="330" y="248" class="d-text-mono" font-weight="700">output 0 value must be at least this</text>
+
+            <defs>
+              <marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" class="d-fill-accent"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+        <figcaption>The renew path is the same picture with the coefficient step removed, and with the price looked up once, for the length of the single name being renewed.</figcaption>
+      </figure>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Worked amounts, all in satoshis, against the example deploy</caption>
+          <thead><tr><th scope="col">Operation</th><th scope="col">Name and length</th><th scope="col">dua</th><th scope="col">Rounds</th><th scope="col">Unit price</th><th scope="col">Required at output 0</th></tr></thead>
+          <tbody>
+            <tr><td>mint</td><td><code>satoshi</code>, 7</td><td>2</td><td>2</td><td>200000, the fallback</td><td><strong>400000</strong></td></tr>
+            <tr><td>mint</td><td><code>abc</code>, 3</td><td>1</td><td>1</td><td>2000000</td><td><strong>2000000</strong></td></tr>
+            <tr><td>mint</td><td><code>abcd</code>, 4</td><td>3</td><td>3</td><td>800000</td><td><strong>2400000</strong></td></tr>
+            <tr><td>mint, three names</td><td><code>satoshi</code>, <code>bitcoin</code>, <code>lapsed</code></td><td>1</td><td>1</td><td>200000 each, all use the fallback</td><td><strong>600000</strong></td></tr>
+            <tr><td>renew</td><td><code>satoshi</code>, 7</td><td>1</td><td>1</td><td>200000</td><td><strong>200000</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>When the granularity bites</h3>
+      <p>If the namespace had <code>"idua": "2"</code> instead, a request for <code>"dua": "3"</code> would round up to 4, giving 2 rounds, and you would pay for four years while asking for three. The rounded value is what is stored, so you do get the four years. It is not a penalty, but it is not what you asked for either, and it is the value that goes into the discount signature.</p>
+
+      <h3>The discount, if you have one</h3>
+      <p>A namespace operator can pre-authorise a discount by signing over your specific mint with the namespace's whitelist key. You then set <code>coef</code> to the agreed value in parts per thousand and put the signature in <code>sig</code>. A <code>coef</code> of 250 means you pay a quarter. If the signature does not verify against either of the two accepted message forms, the mint fails outright with <code>IRS</code>; it does not fall back to full price. The exact message forms are in <a href="specification.html#mint">rule 51</a>. Two traps: the <code>dua</code> in the signed message is the value <em>after</em> rounding, and <code>coef</code> and <code>dua</code> are serialised as strings.</p>
+      <p>There is <strong>no discount on renewal</strong>. The renew key set has no <code>coef</code> and no <code>sig</code>.</p>
+    </section>
+
+    <section id="records" class="prose-wide">
+      <h2>5. Pointing a name somewhere</h2>
+      <p>A name with no records is just a reservation. <code>setrecord</code> is what makes it resolve.</p>
+
+      <pre><code>{
+  "p": "src-101",
+  "op": "SETRECORD",
+  "hash": "3a7f1c8e0b45d29a6f13e874c05b9d2e6a8f04713bc9e25d8a06f1c34b7e9c19",
+  "tokenid": "c2F0b3NoaQ==",
+  "type": "address",
+  "data": { "btc": "bc1qs2x9wz22tasf8pfejlcc3e8yhnzhv9qs2kgwls" },
+  "prim": "true"
+}</code></pre>
+
+      <p>Note that <code>tokenid</code> here is the plain string form, not a list. Only <code>mint</code> takes a list.</p>
+
+      <p>Two record kinds exist. <code>"type": "address"</code> writes a resolved address, and <code>"type": "txt"</code> writes free text. Any other <code>type</code> value produces neither and the operation fails with <code>ID</code>.</p>
+
+      <h3>The Ethereum record is a signature, not an address</h3>
+      <p>This is the least obvious part of SRC-101. Inside <code>data</code>, the <code>eth</code> member is not an Ethereum address. It is the hexadecimal signature of an Ethereum personal-sign message, and the message text is the hexadecimal, byte-reversed hash of the transaction your input 0 is spending. The indexer recovers the signer from that signature and stores the recovered address, without its <code>0x</code> prefix.</p>
+      <pre><code>  "data": { "eth": "&lt;hex signature over the reversed previous txid&gt;" },</code></pre>
+      <p>The effect is that you cannot claim an Ethereum address you do not control, and the proof is bound to this specific Bitcoin transaction. The cost is that the signature has to be produced after you have chosen your inputs and before you sign the Bitcoin transaction.</p>
+
+      <h3>The primary flag</h3>
+      <p>Setting <code>"prim": "true"</code> marks this name as the primary one for its holder within this namespace. Two constraints follow. The payload must also carry an <code>address</code> record whose <code>btc</code> member equals the address funding input 0, else status <code>IDB</code>. And the flag is cleared from every other name that address holds in the namespace: one primary per address per namespace.</p>
+
+      <p>Records merge rather than replace. A <code>setrecord</code> that sets only <code>txt</code> leaves an existing address record in place. The only thing that clears records is a transfer.</p>
+    </section>
+
+    <section id="transfer" class="prose-wide">
+      <h2>6. Handing a name on</h2>
+      <pre><code>{
+  "p": "src-101",
+  "op": "TRANSFER",
+  "hash": "3a7f1c8e0b45d29a6f13e874c05b9d2e6a8f04713bc9e25d8a06f1c34b7e9c19",
+  "toaddress": "bc1qs2x9wz22tasf8pfejlcc3e8yhnzhv9qs2kgwls",
+  "tokenid": "c2F0b3NoaQ=="
+}</code></pre>
+      <p>Five keys, no payment, no term change. The address funding input 0 must be the current owner, and the term must still be running. What the new owner receives is the name and <strong>the remainder of the existing term</strong>, with every record cleared and the primary flag off.</p>
+
+      <div class="note note-warn">
+        <span class="note-title">If you are buying a name from somebody</span>
+        <p>Check the expiry before you pay. A transfer does not extend the term, so a name with three weeks left is a name with three weeks left, and a renewal is a separate transaction with a separate payment. Check the records too: they will be empty the moment the transfer lands, and re-establishing them is your job, including the Ethereum proof.</p>
+      </div>
+
+      <p>There is also nothing in the protocol that makes a sale atomic. The transfer moves the name; whatever you paid for it moved separately, in a transaction the protocol knows nothing about. SRC-101 has no escrow primitive and no on-chain trade path, which is the same reason no Bitcoin Universe product implements one.</p>
+    </section>
+
+    <section id="renew" class="prose-wide">
+      <h2>7. Keeping a name</h2>
+      <pre><code>{
+  "p": "src-101",
+  "op": "RENEW",
+  "hash": "3a7f1c8e0b45d29a6f13e874c05b9d2e6a8f04713bc9e25d8a06f1c34b7e9c19",
+  "tokenid": "c2F0b3NoaQ==",
+  "dua": "1"
+}</code></pre>
+      <p>Five keys, and a payment at output 0 to a namespace recipient. The new expiry is the <strong>existing</strong> expiry plus the term, so renewing early costs you nothing in time. That is the important asymmetry with the expiry rule:</p>
+
+      <div class="register">
+        <div class="register-head"><span>Renewal timing</span><span>Two outcomes</span></div>
+        <div class="entry entry-active">
+          <div class="entry-top">
+            <p class="entry-name">renewed one block early</p>
+            <span class="entry-state">Accepted</span>
+          </div>
+          <dl class="entry-fields">
+            <div><dt>condition</dt><dd>block time &lt; expiry</dd></div>
+            <div><dt>new expiry</dt><dd>old expiry plus term</dd></div>
+            <div><dt>time lost</dt><dd>none</dd></div>
+            <div><dt>owner</dt><dd>unchanged</dd></div>
+          </dl>
+        </div>
+        <div class="entry entry-lapsed">
+          <div class="entry-top">
+            <p class="entry-name">renewed one block late</p>
+            <span class="entry-state">Refused, OE</span>
+          </div>
+          <dl class="entry-fields">
+            <div><dt>condition</dt><dd>block time &gt;= expiry</dd></div>
+            <div><dt>result</dt><dd>no state change, fee spent</dd></div>
+            <div><dt>grace period</dt><dd>none</dd></div>
+            <div><dt>the name</dt><dd>claimable by anyone</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <p>Because there is no grace period, and because the comparison uses the <strong>block timestamp</strong> rather than the time you broadcast, renewing at the last minute is a race against block production and against anyone watching for the name to lapse. Renew with real margin.</p>
+    </section>
+
+    <section id="framing" class="prose-wide">
+      <h2>8. Byte framing and outputs</h2>
+      <p>The framed buffer is a two-byte big-endian length, then <code>stamp:</code>, then the JSON. The declared length covers the prefix and the JSON and excludes itself. The counts below are computed from the exact payloads on this page.</p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Framing computed from the payloads above</caption>
+          <thead><tr><th scope="col">Payload</th><th scope="col">JSON bytes</th><th scope="col">Declared length</th><th scope="col">Framed total</th><th scope="col">Multisig data outputs</th><th scope="col">P2WSH data outputs</th></tr></thead>
+          <tbody>
+            <tr><td><code>DEPLOY</code></td><td>431</td><td><code>01b5</code> (437)</td><td>439</td><td>8</td><td>14</td></tr>
+            <tr><td><code>MINT</code>, 872200 and above</td><td>232</td><td><code>00ee</code> (238)</td><td>240</td><td>4</td><td>8</td></tr>
+            <tr><td><code>MINT</code> with <code>img</code></td><td>278</td><td><code>011c</code> (284)</td><td>286</td><td>5</td><td>9</td></tr>
+            <tr><td><code>TRANSFER</code></td><td>187</td><td><code>00c1</code> (193)</td><td>195</td><td>4</td><td>7</td></tr>
+            <tr><td><code>SETRECORD</code></td><td>222</td><td><code>00e4</code> (228)</td><td>230</td><td>4</td><td>8</td></tr>
+            <tr><td><code>RENEW</code></td><td>137</td><td><code>008f</code> (143)</td><td>145</td><td>3</td><td>5</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The two output counts come from the carrier geometry. A multisig data output is a 1-of-3 bare multisig whose third key is a burn key; the two data-bearing keys contribute 31 bytes each, so <strong>62 bytes per output</strong>. A P2WSH data output carries a 32-byte witness program, so <strong>32 bytes per output</strong>, and only outputs after the first count, since output 0 is the payment. Every transaction also needs output 0 and usually a change output on top of the data outputs above.</p>
+
+      <p>The practical consequence: <strong>a deploy is expensive and a renew is cheap</strong>. The deploy above needs roughly three times the data of a renew. If you are choosing a carrier, note that P2WSH needs about twice as many outputs for the same payload but each is a cheap 32-byte program, while multisig packs more per output but uses uncompressible keys.</p>
+
+      <div class="note note-warn">
+        <span class="note-title">If you use P2WSH before block 940000</span>
+        <p>The decoder reads output 0's value on the P2WSH branch only from block 940000. Below that height a P2WSH-carried <code>mint</code> or <code>renew</code> is seen as paying zero and fails with <code>IRV</code>, no matter what you actually paid. <code>deploy</code>, <code>transfer</code> and <code>setrecord</code> are unaffected because they never read that value. Use bare multisig for paid operations below that height.</p>
+      </div>
+    </section>
+
+    <section id="reading" class="prose-wide">
+      <h2>9. Reading a result</h2>
+      <p>After your transaction confirms, there are three things it might have become, and only one of them is what you wanted.</p>
+
+      <dl class="terms">
+        <dt><span class="badge badge-valid">Valid</span></dt>
+        <dd>The register changed. Your name appears with your owner address and an expiry.</dd>
+        <dt><span class="badge badge-invalid">Invalid, with a status code</span></dt>
+        <dd>The operation was understood and refused. There is a record with a code such as <code>IRV</code> or <code>OE</code>, and the <a href="reference.html#statuses">status table</a> explains it. Nothing in the register changed.</dd>
+        <dt><span class="badge badge-neutral">Excluded</span></dt>
+        <dd>The payload was never an SRC-101 operation. No record, no status code, nothing to look up. If you cannot find your transaction at all in an SRC-101 view, this is almost certainly what happened, and the cause is almost certainly the key set or a field type.</dd>
+      </dl>
+
+      <p>The most common causes of exclusion, in the order worth checking:</p>
+      <ol>
+        <li>An extra or missing key. Compare against the <a href="specification.html#keysets">key set table</a> character by character.</li>
+        <li><code>prim</code> written as a JSON boolean rather than a string.</li>
+        <li>A numeric field written as a decimal string, such as <code>"dua": "1.5"</code>.</li>
+        <li>A <code>tokenid</code> whose Base64 is not a multiple of four characters long, or which uses the URL-safe alphabet.</li>
+        <li>Below block 872200, a mint missing <code>img</code>.</li>
+      </ol>
+    </section>
+
+    <section id="support" class="prose-wide">
+      <h2>10. What Bitcoin Universe supports</h2>
+      <p>Taken from the ecosystem capability registry, which is generated from the Core protocol registry and records what the product code implements.</p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>SRC-101 support by surface</caption>
+          <thead><tr><th scope="col">Surface</th><th scope="col">Actions</th></tr></thead>
+          <tbody>
+            <tr><td>Core</td><td>view, discover, view-collection, view-activity, view-transaction</td></tr>
+            <tr><td>Wallet</td><td>view, send, receive</td></tr>
+            <tr><td>Inscribe</td><td>mint, transfer</td></tr>
+            <tr><td>Marketplace</td><td><strong>None recorded.</strong> The registry has no marketplace entry for SRC-101 at all</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Three consequences follow directly from that table, and it is worth being blunt about all three.</p>
+      <ul>
+        <li><strong>No product implements a trade path.</strong> There is no list, no buy, no offer, no settle. This is not a narrowed marketplace with unsupported actions recorded against it, as SRC-20 has; there is no marketplace entry for the protocol at all.</li>
+        <li><strong>Inscribe cannot deploy, renew or write records.</strong> Its two recorded actions are mint and transfer. Opening a namespace, renewing a term and setting a record are operations you would need to construct and broadcast yourself.</li>
+        <li><strong>No confirmation, freshness or reorg policy is recorded.</strong> The registry entry for SRC-101 carries a null source of truth, a null indexer, and null policies for all three. Where a protocol like SRC-20 can point at a stated policy, SRC-101 cannot.</li>
+      </ul>
+      <p class="small muted">This site states what the registry records and nothing beyond it. A capability that is not in the registry is not claimed here, and support recorded in the registry is a statement about product code, not a promise that a feature is enabled in production.</p>
+    </section>
+
+    <section id="safety" class="prose-wide">
+      <h2>11. Safety</h2>
+      <div class="grid-2">
+        <div class="panel">
+          <h4>Names can look identical</h4>
+          <p class="small">Names are decoded from Base64 and lower-cased, and the character rules reject spaces and format characters but not homoglyphs. Two names can render the same and be different registrations. Compare the decoded bytes, not the rendering.</p>
+        </div>
+        <div class="panel">
+          <h4>The namespace is the whole context</h4>
+          <p class="small">The same name in a different namespace is a different registration with a different owner. A name shown without its namespace hash tells you nothing.</p>
+        </div>
+        <div class="panel">
+          <h4>Expiry is unforgiving</h4>
+          <p class="small">No grace period, no redemption. Note your expiry, renew early, and remember that a transfer does not extend it.</p>
+        </div>
+        <div class="panel">
+          <h4>Records are claims, one of them proved</h4>
+          <p class="small">A <code>txt</code> record is whatever the owner wrote. A <code>btc</code> record is a well-formed address, not a proved one. Only the <code>eth</code> record carries a signature the indexer verifies. Do not treat the others as attestations.</p>
+        </div>
+        <div class="panel">
+          <h4>Nobody can undo a broadcast</h4>
+          <p class="small">A confirmed transaction cannot be reversed, a mint cannot be un-minted, and no operator can move a name back. Verify the namespace, the decoded name, the recipient and the payment amount before you sign.</p>
+        </div>
+        <div class="panel">
+          <h4>There is no consensus safety net</h4>
+          <p class="small">SRC-101 contributes nothing to the block ledger hash and has no cross-implementation check. Two explorers can disagree about who owns a name and nothing will flag it. Where the answer matters, read more than one.</p>
+        </div>
+      </div>
+    </section>
+  </div>
 </main>
-<footer><div class="wrap footer-inner"><span>SRC-101 on Bitcoin Stamps</span><span>Presented by <a href="https://github.com/bitcoinuniverse/src-101">Bitcoin Universe</a></span></div></footer></body></html>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2>This site</h2>
+        <ul>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="specification.html">Specification</a></li>
+          <li><a href="guide.html">Guide</a></li>
+          <li><a href="reference.html">Reference</a></li>
+          <li><a href="vectors.html">Test vectors</a></li>
+          <li><a href="validator.html">Payload validator</a></li>
+          <li><a href="changelog.html">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Related protocols</h2>
+        <p><img src="assets/stampchain-logo-480.svg" alt="" width="88" height="22" style="opacity:.75"></p>
+        <ul>
+          <li><a href="https://bitcoinuniverseio.github.io/src-20/">SRC-20, same carrier</a></li>
+          <li><a href="https://github.com/stampchain-io/btc_stamps">Bitcoin Stamps indexer</a></li>
+          <li><a href="https://stampchain.io/">Stampchain explorer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://docs.bitcoinuniverse.io">Documentation portal</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101">This repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101/security/advisories/new">Report a vulnerability</a></li>
+          <li><a href="llms.txt">llms.txt</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon">
+      <p>Document version 2026.09.01. Lifecycle experimental. Rules verified against <code>stampchain-io/btc_stamps</code> 1.9.3.</p>
+      <p>Every payload on this page is constructed for illustration. Addresses and keys are checksum-valid but derived from fixed text, and no transaction hash here names a real transaction.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

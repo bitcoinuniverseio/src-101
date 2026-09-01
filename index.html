@@ -1,23 +1,344 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SRC-101 — Names that stay in Bitcoin history</title>
-  <meta name="description" content="SRC-101 brings namespaces, unique names, renewals, transfers, and records into the Bitcoin Stamps ecosystem.">
-  <meta name="theme-color" content="#09090f">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SRC-101: a name registry carried in Bitcoin outputs</title>
+<meta name="description" content="SRC-101 is a name registry protocol on Bitcoin. Deploy, mint, transfer, setrecord and renew operations are JSON documents carried in transaction output scripts through the Bitcoin Stamps data carrier. Specification, guide, reference, test vectors and a payload validator.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/src-101/">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="search-index" href="search-index.json">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SRC-101: a name registry carried in Bitcoin outputs">
+<meta property="og:description" content="The name registry built on the Bitcoin Stamps data carrier. Names are claimed, renewed and allowed to expire. Specification, guide, reference, test vectors and a client-side payload validator.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/src-101/">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/src-101/assets/og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<script>try{var t=localStorage.getItem('src101-docs-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
-<body style="--accent:#ff4d8d;--accent-2:#ffcc70">
-<div class="topbar"><div class="wrap nav"><a class="brand" href="index.html"><span class="brand-mark">101</span><span>SRC-101</span></a><nav class="nav-links" aria-label="Main navigation"><a href="index.html" aria-current="page">Home</a><a href="reference.html">Discover</a><a href="guide.html">Get started</a><a class="nav-cta" href="https://inscribe.bitcoinuniverse.io/">Open Bitcoin Universe ↗</a></nav></div></div>
-<main>
-  <div class="wrap hero">
-    <div><div class="eyebrow">Names that stay in Bitcoin history</div><h1>Claim a name. Build its story<span class="gradient">.</span></h1><p class="lede">SRC-101 brings namespaces, unique names, renewals, transfers, and records into the Bitcoin Stamps ecosystem.</p><div class="actions"><a class="button primary" href="guide.html">Start your journey →</a><a class="button secondary" href="reference.html">Discover how it works</a></div></div>
-    <div class="hero-art"><div class="orbit"><img class="logo-art core" src="assets/stampchain-logo-480.svg" alt=""><span class="spark one">Bitcoin Stamps</span><span class="spark two">lasting culture</span><span class="spark three">onchain history</span></div></div>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 26 30" aria-hidden="true" focusable="false">
+        <rect x="1" y="1" width="24" height="28" rx="2" fill="var(--card)" stroke="var(--rule)" stroke-width="1.2"/>
+        <rect x="1" y="1" width="3.2" height="28" rx="1.4" fill="var(--accent)"/>
+        <rect x="7.5" y="6" width="13" height="3.4" rx="1" fill="var(--ink)"/>
+        <rect x="7.5" y="13" width="11" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="17.5" width="13" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="22" width="7.5" height="1.9" rx=".9" fill="var(--lapsed)"/>
+      </svg>
+      <span>SRC-101</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html" aria-current="page">Overview</a></li>
+        <li><a href="specification.html">Specification</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="reference.html">Reference</a></li>
+        <li><a href="vectors.html">Test vectors</a></li>
+        <li><a href="validator.html">Validator</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <form class="search" id="site-search" role="search" hidden>
+        <label class="visually-hidden" for="q">Search the SRC-101 documentation</label>
+        <input class="search-input" id="q" type="search" placeholder="Search (press /)" autocomplete="off">
+        <ul class="search-results" id="search-results" aria-live="polite"></ul>
+      </form>
+      <button class="theme-toggle" id="theme-toggle" type="button" hidden>Dark</button>
+    </div>
   </div>
-  <div class="band"><div class="wrap band-inner"><strong>Identity with an onchain timeline.</strong><span>Built for curious humans, collectors, creators, and communities.</span></div></div>
-  <section><div class="wrap"><div class="section-head"><div><div class="eyebrow">Why it matters</div><h2>A name is only the beginning.</h2></div><p>SRC-101 names belong to a namespace and carry an ownership lifecycle. They can move, renew, and connect to signed records while their history remains anchored through Bitcoin Stamps.</p></div><div class="grid"><article class="card"><span class="num">01 / EXPERIENCE</span><h3>Discover</h3><p>Explore namespaces and the names that communities build around them.</p></article><article class="card"><span class="num">02 / EXPERIENCE</span><h3>Own</h3><p>Mint an available name and follow its ownership and renewal timeline.</p></article><article class="card"><span class="num">03 / EXPERIENCE</span><h3>Connect</h3><p>Associate supported records and carry the name into new experiences.</p></article></div></div></section>
-  <section><div class="wrap spotlight"><div class="eyebrow">The protocol in plain language</div><h2>A clear idea with an onchain heartbeat.</h2><p>SRC-101 names belong to a namespace and carry an ownership lifecycle. They can move, renew, and connect to signed records while their history remains anchored through Bitcoin Stamps.</p><div class="fact-list" style="margin-top:34px"><div class="fact"><strong>Namespaces</strong><span>A deployment establishes the space where SRC-101 names can live.</span></div><div class="fact"><strong>Names</strong><span>Each name uses an encoded token identity tied to its namespace.</span></div><div class="fact"><strong>Lifecycle</strong><span>Mint, transfer, renew, and record updates create the name’s timeline.</span></div><div class="fact"><strong>Records</strong><span>Supported signed data can connect a name to useful destinations.</span></div></div></div></section>
-  <section><div class="wrap"><div class="spotlight"><div class="eyebrow">Ready to explore?</div><h2>See what your next Bitcoin Universe moment can become.</h2><p>Explore supported experiences, connect a wallet when you are ready, and review every transaction before it leaves your hands.</p><div class="actions"><a class="button primary" href="https://inscribe.bitcoinuniverse.io/">Open Bitcoin Universe ↗</a><a class="button secondary" href="guide.html">See the journey</a></div></div></div></section>
+</header>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Bitcoin mainnet &middot; Name registry &middot; Bitcoin Stamps carrier</p>
+          <h1>A name registry written into Bitcoin transaction outputs</h1>
+          <p class="lede">SRC-101 turns a Bitcoin transaction into a register entry. A <code>deploy</code> opens a namespace, a <code>mint</code> claims a name inside it for a paid term, and <code>setrecord</code>, <code>transfer</code> and <code>renew</code> keep that entry current. Names are leased, not owned outright: every entry carries an expiry, and when the expiry passes the name returns to the pool.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="specification.html">Read the specification</a>
+            <a class="btn" href="validator.html">Validate a payload</a>
+            <a class="btn" href="guide.html">Start with the guide</a>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <p class="plate-title">At a glance</p>
+            <dl class="footer-meta small">
+              <dt>Chain and network</dt><dd>Bitcoin mainnet only</dd>
+              <dt>Model</dt><dd>Leased name records, one owner per name</dd>
+              <dt>Operations</dt><dd>deploy, mint, transfer, setrecord, renew</dd>
+              <dt>Protocol string</dt><dd><code>src-101</code>, compared case-insensitively</dd>
+              <dt>Names</dt><dd>Base64 encoded, up to 128 characters encoded</dd>
+              <dt>Term unit</dt><dd><code>dua</code> years of 31536000 seconds</dd>
+              <dt>Carriers</dt><dd>Bare multisig, and P2WSH</dd>
+              <dt>Live since</dt><dd>Block 870652</dd>
+              <dt>Lifecycle</dt><dd>Experimental</dd>
+              <dt>Document version</dt><dd>2026.09.01</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="perf">
+
+    <section class="prose-wide">
+      <h2 id="plain">What it actually is, in plain language</h2>
+      <p>Think of a paper register in a records office. Somebody opens the book: this book is for names ending in a particular way, here is the price per name length, here is the address that collects the fees, here is how long one term lasts. That is a <strong>deploy</strong>. After that, anyone can write a line in the book claiming a free name for a number of terms, provided they pay the listed price to the listed address. That is a <strong>mint</strong>.</p>
+      <p>Once a line exists, the person who owns it can change the details recorded under the name (<strong>setrecord</strong>), hand the line to somebody else (<strong>transfer</strong>), or pay again to push the expiry date further out (<strong>renew</strong>). If nobody renews before the expiry date, the line goes quiet and the name becomes claimable by anyone again.</p>
+      <p>What makes this a Bitcoin protocol rather than a database is where the book lives. Each of those operations is a short JSON document written into a Bitcoin transaction output script through the Bitcoin Stamps data carrier. Bitcoin does not know or care what the document says. It confirms the transaction, and then <em>indexers</em>, programs that read the whole chain in order, apply the same rules and arrive at the same register.</p>
+
+      <div class="note">
+        <span class="note-title">The consequence people miss</span>
+        <p>A confirmed Bitcoin transaction is not a successful registration. Your transaction can confirm perfectly and your mint claim nothing, because somebody claimed the name two blocks earlier, or because the output paying the collector was one satoshi short. Always check the register afterwards, not just the transaction status. The <a href="specification.html#validity">validity rules</a> spell out every case, and the <a href="reference.html#statuses">status code table</a> names each failure.</p>
+      </div>
+
+      <h3>The register entry, and the two states it can be in</h3>
+      <p>Everything in SRC-101 reduces to one row per name inside one namespace. This site draws that row the way the protocol stores it: the name in the lead, its record fields beneath, and a single mark for whether the term is still running.</p>
+
+      <div class="register">
+        <div class="register-head"><span>Namespace 3a7f...c19b</span><span>Register, illustrative</span></div>
+        <div class="entry entry-active">
+          <div class="entry-top">
+            <p class="entry-name">satoshi</p>
+            <span class="entry-state">Active</span>
+          </div>
+          <dl class="entry-fields">
+            <div><dt>tokenid</dt><dd>c2F0b3NoaQ==</dd></div>
+            <div><dt>owner</dt><dd>bc1qs2x...kgwls</dd></div>
+            <div><dt>expires</dt><dd>mint time plus dua years</dd></div>
+            <div><dt>preowner</dt><dd>none, first claim</dd></div>
+            <div><dt>address_btc</dt><dd>bc1qs2x...kgwls</dd></div>
+            <div><dt>primary</dt><dd>yes</dd></div>
+          </dl>
+        </div>
+        <div class="entry entry-lapsed">
+          <div class="entry-top">
+            <p class="entry-name">lapsed</p>
+            <span class="entry-state">Expired</span>
+          </div>
+          <dl class="entry-fields">
+            <div><dt>tokenid</dt><dd>bGFwc2Vk</dd></div>
+            <div><dt>owner</dt><dd>row still present</dd></div>
+            <div><dt>expires</dt><dd>already passed</dd></div>
+            <div><dt>renew</dt><dd>refused, status OE</dd></div>
+            <div><dt>transfer</dt><dd>refused, status OE</dd></div>
+            <div><dt>mint</dt><dd>open to anyone</dd></div>
+          </dl>
+        </div>
+      </div>
+      <p class="small muted">An expired entry is not deleted. The row stays in the owners table with its old owner and its old expiry, and every owner-only operation against it fails. What changes is that a fresh <code>mint</code> of the same name now succeeds and overwrites the row, recording the previous holder as <code>preowner</code>.</p>
+
+      <h3>Who this is for</h3>
+      <div class="grid-2">
+        <div class="panel">
+          <h4>If you want to hold a name</h4>
+          <p class="small">Start with the <a href="guide.html">guide</a>. It walks through choosing a namespace, what a term costs, why the payment output has to be exact, and what happens as your expiry approaches.</p>
+        </div>
+        <div class="panel">
+          <h4>If you are building a wallet or app</h4>
+          <p class="small">Read the <a href="specification.html">specification</a> end to end, then check your builder against the <a href="vectors.html">test vectors</a>. The <a href="validator.html">validator</a> catches the key-set mistakes that silently exclude a payload.</p>
+        </div>
+        <div class="panel">
+          <h4>If you are writing an indexer</h4>
+          <p class="small">The <a href="specification.html#keysets">key-set rules</a>, the <a href="specification.html#heights">activation heights</a> and the <a href="reference.html#semantics">indexer semantics</a> are where implementations diverge. Two of them are unusual enough that a reasonable implementer will get them wrong.</p>
+        </div>
+        <div class="panel">
+          <h4>If you came from SRC-20</h4>
+          <p class="small">Same carrier, same prefix, same keyburn requirement, and almost nothing else in common. Go straight to <a href="#family">what they share and where they diverge</a>.</p>
+        </div>
+      </div>
+
+      <h2 id="lifecycle">The lifecycle of one name</h2>
+      <p>Five operations, one expiry clock. Everything below the deploy is scoped to a single name inside a single namespace, identified by the deploy transaction hash plus the decoded name.</p>
+
+      <figure>
+        <div class="diagram-scroll">
+          <svg viewBox="0 0 940 372" role="img" aria-labelledby="lc-title lc-desc" preserveAspectRatio="xMidYMid meet" style="min-width:640px">
+            <title id="lc-title">The SRC-101 name lifecycle</title>
+            <desc id="lc-desc">A deploy opens a namespace. A mint claims a free name and starts an expiry clock. While the term is running, the owner may setrecord, transfer or renew. When the expiry passes, owner operations are refused and the name becomes mintable by anyone again.</desc>
+
+            <rect x="14" y="20" width="170" height="66" rx="4" class="d-fill-card d-stroke" stroke-width="1.5"/>
+            <text x="30" y="46" class="d-text-mono" font-weight="700">deploy</text>
+            <text x="30" y="66" class="d-text-soft">opens the namespace</text>
+            <text x="30" y="79" class="d-text-soft">sets price, rec, idua, term window</text>
+
+            <path d="M184 53 H236" class="d-stroke-accent" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+
+            <rect x="240" y="20" width="170" height="66" rx="4" class="d-fill-card d-stroke" stroke-width="1.5"/>
+            <rect x="240" y="20" width="5" height="66" rx="2" class="d-fill-accent"/>
+            <text x="258" y="46" class="d-text-mono" font-weight="700">mint</text>
+            <text x="258" y="66" class="d-text-soft">claims a free name, pays rec</text>
+            <text x="258" y="79" class="d-text-soft">expiry = block time + dua years</text>
+
+            <path d="M325 86 V126" class="d-stroke-accent" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+
+            <rect x="120" y="130" width="700" height="122" rx="4" class="d-fill-paper d-stroke" stroke-width="1.5" stroke-dasharray="5 4"/>
+            <text x="140" y="152" class="d-text-accent">TERM RUNNING, OWNER ONLY</text>
+
+            <rect x="140" y="164" width="200" height="70" rx="4" class="d-fill-card d-stroke" stroke-width="1.2"/>
+            <text x="156" y="188" class="d-text-mono" font-weight="700">setrecord</text>
+            <text x="156" y="208" class="d-text-soft">writes btc, eth or txt data</text>
+            <text x="156" y="221" class="d-text-soft">may claim the primary flag</text>
+
+            <rect x="366" y="164" width="200" height="70" rx="4" class="d-fill-card d-stroke" stroke-width="1.2"/>
+            <text x="382" y="188" class="d-text-mono" font-weight="700">transfer</text>
+            <text x="382" y="208" class="d-text-soft">new owner, same expiry</text>
+            <text x="382" y="221" class="d-text-soft">records are cleared</text>
+
+            <rect x="592" y="164" width="200" height="70" rx="4" class="d-fill-card d-stroke" stroke-width="1.2"/>
+            <rect x="592" y="164" width="5" height="70" rx="2" class="d-fill-accent"/>
+            <text x="610" y="188" class="d-text-mono" font-weight="700">renew</text>
+            <text x="610" y="208" class="d-text-soft">pays again, extends expiry</text>
+            <text x="610" y="221" class="d-text-soft">only before it lapses</text>
+
+            <path d="M470 252 V292" class="d-stroke-lapsed" stroke-width="2" fill="none" marker-end="url(#arl)"/>
+            <text x="484" y="276" class="d-text-soft">expiry passes with no renew</text>
+
+            <rect x="300" y="296" width="340" height="60" rx="4" class="d-fill-card d-stroke-lapsed" stroke-width="1.5"/>
+            <rect x="300" y="296" width="5" height="60" rx="2" class="d-fill-lapsed"/>
+            <text x="318" y="320" class="d-text-mono" font-weight="700">expired</text>
+            <text x="318" y="340" class="d-text-soft">owner operations refused with status OE</text>
+
+            <path d="M300 326 H210 V90" class="d-stroke-lapsed" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#arl)"/>
+            <text x="20" y="290" class="d-text-soft">mintable again by anyone</text>
+            <text x="20" y="304" class="d-text-soft">previous holder kept as preowner</text>
+
+            <defs>
+              <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" class="d-fill-accent"/>
+              </marker>
+              <marker id="arl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" class="d-fill-lapsed"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+        <figcaption>The lifecycle as the reference indexer implements it in <code>index_core/src101.py</code>. Note the one edge that surprises people: there is no grace period. The renew path is closed at exactly the moment the expiry passes, and from that instant the name is open to anyone.</figcaption>
+      </figure>
+
+      <h2 id="family">What SRC-101 shares with SRC-20, and where they diverge</h2>
+      <p>Both protocols ride the same Bitcoin Stamps data carrier, and an indexer reads them out of a transaction with the same code. Above that line they share almost nothing: no ledger, no state, no consensus hash, and a completely different validation temperament.</p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Verified against btc_stamps 1.9.3</caption>
+          <thead><tr><th scope="col">Aspect</th><th scope="col">SRC-20</th><th scope="col">SRC-101</th></tr></thead>
+          <tbody>
+            <tr><td>Data carrier</td><td colspan="2">Identical. Bare multisig with ARC4, or P2WSH. Framed as a two-byte big-endian length, then <code>stamp:</code>, then the JSON.</td></tr>
+            <tr><td>Keyburn requirement</td><td colspan="2">Identical. <code>keyburn == 1</code> is required for the transaction to be classified as either protocol.</td></tr>
+            <tr><td>Genesis height</td><td>788041</td><td><strong>870652</strong></td></tr>
+            <tr><td>Counterparty carriage</td><td>Ignored at and above block 796000</td><td><strong>Never ends.</strong> A Counterparty-carried SRC-101 is accepted at any height at or above genesis</td></tr>
+            <tr><td>Extra JSON fields</td><td>Tolerated, superset matching</td><td><strong>Rejected.</strong> Exact key-set matching for four of the five operations</td></tr>
+            <tr><td>Field-level failure</td><td>Recorded as invalid with a status code</td><td><strong>Excluded outright.</strong> A malformed field kills the whole operation before dispatch</td></tr>
+            <tr><td>State model</td><td>Account ledger, balance per address</td><td>One row per name, one owner, one expiry</td></tr>
+            <tr><td>Numeric type</td><td><code>Decimal</code>, ceiling 2^64 minus 1</td><td><code>int</code>, no ceiling, must be at least 0</td></tr>
+            <tr><td>Payment required</td><td>None. Operations are free of protocol fees</td><td><strong>Yes.</strong> Mint and renew must pay a computed amount to output 0</td></tr>
+            <tr><td>Ledger hash</td><td>Contributes to the block ledger hash, cross-checked against stampscan</td><td>Contributes nothing. No cross-check exists</td></tr>
+            <tr><td>Marketplace in Bitcoin Universe</td><td>StampDEX, external execution</td><td><strong>None.</strong> No product implements a trade path</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The SRC-20 documentation is a sibling of this site: <a href="https://bitcoinuniverseio.github.io/src-20/">bitcoinuniverseio.github.io/src-20</a>. Its <a href="https://bitcoinuniverseio.github.io/src-20/specification.html">carrier section</a> and this site's <a href="specification.html#carrier">carrier section</a> describe the same bytes, so if you have already implemented one carrier you have implemented both.</p>
+
+      <h2 id="wrong">Five things implementers get wrong</h2>
+      <ol>
+        <li><strong>Extra fields are fatal, not ignored.</strong> A <code>deploy</code>, <code>transfer</code>, <code>setrecord</code> or <code>renew</code> payload is compared to its key set with a symmetric difference. One extra key, one missing key, and the payload is not an SRC-101 operation at all. It leaves no record and no status code. <code>mint</code> is the sole exception, and only at and above block 872200. See <a href="specification.html#keysets">rule 20</a>.</li>
+        <li><strong><code>prim</code> must be the string, not the boolean.</strong> The validator compares the submitted value against <code>"true"</code> and <code>"false"</code> as text. A JSON boolean <code>true</code> fails that comparison, and because a field failure is fatal in SRC-101, the whole operation is discarded. See <a href="specification.html#fields">rule 32</a>.</li>
+        <li><strong>A mint of several names partially succeeds.</strong> When a <code>mint</code> lists several names and some are already held with a live expiry, those names are quietly dropped from the list and the remaining ones are minted. You are not refunded and you are not told. Only if <em>every</em> name is taken does the operation fail, with status <code>DM</code>. See <a href="specification.html#mint">rule 55</a>.</li>
+        <li><strong>A transfer wipes the records.</strong> The owners row written by a <code>transfer</code> sets the resolved Bitcoin address, the resolved Ethereum address and the text record back to empty. Transferring a name and expecting the records to travel with it is a mistake. See <a href="specification.html#transfer">rule 61</a>.</li>
+        <li><strong><code>lim</code> is not a mint limit.</strong> The deploy field named <code>lim</code> is never enforced as a cap on anything. It is used solely as a sentinel: a namespace whose <code>lim</code> is zero is treated as not deployed, so every later operation against it fails with <code>ND</code>. Deploying with <code>lim</code> zero creates a namespace nobody can use. See <a href="specification.html#deploy">rule 40</a>.</li>
+      </ol>
+      <p>A sixth, for readers rather than implementers: <strong>expiry is absolute</strong>. There is no grace period, no redemption window, and no automatic renewal. The block timestamp is compared against the stored expiry, and the moment it passes, the name is gone.</p>
+
+      <h2 id="support">Bitcoin Universe support</h2>
+      <p>Taken from the ecosystem capability registry, which is generated from the Core protocol registry, and nothing beyond it:</p>
+      <div class="grid-3">
+        <div class="panel">
+          <h4>Core</h4>
+          <p class="small">view, discover, view-collection, view-activity, view-transaction</p>
+        </div>
+        <div class="panel">
+          <h4>Wallet</h4>
+          <p class="small">view, send, receive</p>
+        </div>
+        <div class="panel">
+          <h4>Inscribe</h4>
+          <p class="small">mint, transfer</p>
+        </div>
+      </div>
+
+      <div class="note note-lapsed">
+        <span class="note-title">No marketplace, stated plainly</span>
+        <p>The capability snapshot records <strong>no marketplace entry for SRC-101 at all</strong>. No Bitcoin Universe product implements list, buy, offer, settle or any other trade path for an SRC-101 name. The snapshot also records no source of truth, no indexer, no freshness policy, no confirmation policy and no reorg policy for this protocol. Anywhere you see an SRC-101 name being traded, that is a third party operating outside anything documented here.</p>
+      </div>
+      <p class="small muted">Note also what Inscribe does <em>not</em> offer: there is no <code>deploy</code> action, and no action for <code>renew</code> or <code>setrecord</code>. Opening a namespace, renewing a term and writing records are things you would need to construct yourself. The <a href="guide.html#support">guide</a> lays out the practical consequence.</p>
+
+      <h2 id="grounding">Grounding</h2>
+      <p>Every normative statement on this site is traceable to code that enforces it. The primary source is the Bitcoin Stamps indexer, version 1.9.3:</p>
+      <ul>
+        <li><code>indexer/src/index_core/src101.py</code>, 1347 lines, holds the validator, the five operation handlers, the key sets and the owners projection.</li>
+        <li><code>indexer/src/config.py</code> holds the activation heights and the table names quoted throughout.</li>
+        <li><code>indexer/src/index_core/models.py</code> holds the classification gate that decides a transaction is SRC-101 at all.</li>
+        <li><code>indexer/src/index_core/transaction_utils.py</code> holds the carrier decoding shared with SRC-20.</li>
+        <li><code>indexer/src/index_core/database.py</code> holds the table writes, the reorg purge and the owners rebuild.</li>
+      </ul>
+      <p>Where this site says something the code does not decide, it says so. Where the code does something surprising, the <a href="reference.html#limitations">limitations</a> section names it rather than smoothing it over.</p>
+
+    </section>
+  </div>
 </main>
-<footer><div class="wrap footer-inner"><span>SRC-101 on Bitcoin Stamps</span><span>Presented by <a href="https://github.com/bitcoinuniverse/src-101">Bitcoin Universe</a></span></div></footer></body></html>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2>This site</h2>
+        <ul>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="specification.html">Specification</a></li>
+          <li><a href="guide.html">Guide</a></li>
+          <li><a href="reference.html">Reference</a></li>
+          <li><a href="vectors.html">Test vectors</a></li>
+          <li><a href="validator.html">Payload validator</a></li>
+          <li><a href="changelog.html">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Related protocols</h2>
+        <p><img src="assets/stampchain-logo-480.svg" alt="" width="88" height="22" style="opacity:.75"></p>
+        <ul>
+          <li><a href="https://bitcoinuniverseio.github.io/src-20/">SRC-20, same carrier</a></li>
+          <li><a href="https://github.com/stampchain-io/btc_stamps">Bitcoin Stamps indexer</a></li>
+          <li><a href="https://stampchain.io/">Stampchain explorer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://docs.bitcoinuniverse.io">Documentation portal</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101">This repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101/security/advisories/new">Report a vulnerability</a></li>
+          <li><a href="llms.txt">llms.txt</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon">
+      <p>Document version 2026.09.01. Lifecycle experimental. Rules verified against <code>stampchain-io/btc_stamps</code> 1.9.3.</p>
+      <p>SRC-101 originated in the Bitcoin Stamps community. This repository documents the protocol and does not own it. Static hand-authored HTML, CSS and vanilla JavaScript. No trackers, no third-party requests, no fonts fetched over the network.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>
