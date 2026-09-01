@@ -17,16 +17,32 @@
     }
   ],
   "protocols": [
-    "src-101"
+    "src-101",
+    "src101",
+    "stamps",
+    "src-20",
+    "counterparty"
   ],
   "audiences": [
     "user",
+    "collector",
     "app-developer",
-    "protocol-implementer"
+    "protocol-implementer",
+    "indexer-operator"
+  ],
+  "specifications": [
+    "specification.html"
   ],
   "owners": [
     "bitcoinuniverseio"
   ],
+  "upstream": {
+    "project": "Bitcoin Stamps / SRC-101",
+    "url": "https://github.com/stampchain-io/btc_stamps",
+    "license": "AGPL-3.0",
+    "relationship": "derived",
+    "divergenceSummary": "SRC-101 originated in the Bitcoin Stamps community, not in Bitcoin Universe. This repository documents the protocol as the Stamps indexer implements it, at version 1.9.3, and marks every Bitcoin Universe indexing or product decision as Universe-specific. Where the reference implementation behaves in a way that reads as a defect, the specification records it as an observation rather than describing an intention the code does not have."
+  },
   "lastVerified": {
     "commit": "350c485275350d772ec59e1822c4d1b2ece10d5e",
     "timestamp": "2026-09-01T02:00:00Z"

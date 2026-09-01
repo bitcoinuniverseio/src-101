@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SRC-101 specification</title>
+<meta name="description" content="The normative rules of SRC-101, numbered and traceable to the enforcing code in the Bitcoin Stamps indexer. Carrier, activation heights, key sets, field rules, the five operations, validity and status codes.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/src-101/specification.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="search-index" href="search-index.json">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SRC-101 specification">
+<meta property="og:description" content="Numbered normative rules for SRC-101, each traceable to the code that enforces it.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/src-101/specification.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/src-101/assets/og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<script>try{var t=localStorage.getItem('src101-docs-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 26 30" aria-hidden="true" focusable="false">
+        <rect x="1" y="1" width="24" height="28" rx="2" fill="var(--card)" stroke="var(--rule)" stroke-width="1.2"/>
+        <rect x="1" y="1" width="3.2" height="28" rx="1.4" fill="var(--accent)"/>
+        <rect x="7.5" y="6" width="13" height="3.4" rx="1" fill="var(--ink)"/>
+        <rect x="7.5" y="13" width="11" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="17.5" width="13" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="22" width="7.5" height="1.9" rx=".9" fill="var(--lapsed)"/>
+      </svg>
+      <span>SRC-101</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="specification.html" aria-current="page">Specification</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="reference.html">Reference</a></li>
+        <li><a href="vectors.html">Test vectors</a></li>
+        <li><a href="validator.html">Validator</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <form class="search" id="site-search" role="search" hidden>
+        <label class="visually-hidden" for="q">Search the SRC-101 documentation</label>
+        <input class="search-input" id="q" type="search" placeholder="Search (press /)" autocomplete="off">
+        <ul class="search-results" id="search-results" aria-live="polite"></ul>
+      </form>
+      <button class="theme-toggle" id="theme-toggle" type="button" hidden>Dark</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="hero">
+      <p class="eyebrow">Normative &middot; Bitcoin mainnet &middot; btc_stamps 1.9.3</p>
+      <h1>SRC-101 specification</h1>
+      <p class="lede">Every rule below states what the reference indexer does, and names the file that does it. Where the code contains a branch that cannot be reached, or a field that is declared and never used, this document says so rather than describing the intention.</p>
+    </div>
+
+    <div class="note">
+      <span class="note-title">How to read the rule numbers</span>
+      <p>Rules are numbered once and never renumbered. If a rule is withdrawn its number is retired and the <a href="changelog.html">changelog</a> records why. A rule marked <span class="badge badge-neutral">Observation</span> is not normative: it describes behaviour of the reference implementation that an independent implementer must reproduce to stay in consensus, but which reads as a defect rather than a design.</p>
+    </div>
+
+    <div class="toc">
+      <p>Contents</p>
+      <ol>
+        <li><a href="#scope">Scope and terminology</a></li>
+        <li><a href="#carrier">The data carrier</a></li>
+        <li><a href="#heights">Classification and activation heights</a></li>
+        <li><a href="#keysets">The payload and its key sets</a></li>
+        <li><a href="#fields">Field rules</a></li>
+        <li><a href="#deploy">deploy</a></li>
+        <li><a href="#mint">mint</a></li>
+        <li><a href="#transfer">transfer</a></li>
+        <li><a href="#renew">renew</a></li>
+        <li><a href="#setrecord">setrecord</a></li>
+        <li><a href="#validity">Validity and state</a></li>
+        <li><a href="#counterparty">The Counterparty relationship</a></li>
+      </ol>
+    </div>
+
+    <hr class="perf">
+
+    <section id="scope" class="prose-wide">
+      <h2>1. Scope and terminology</h2>
+
+      <div class="rule" id="r1">
+        <span class="rule-id">Rule 1</span>
+        <p>SRC-101 is defined on <strong>Bitcoin mainnet only</strong>. No other chain and no test network is in scope. Nothing in this document describes behaviour on signet, testnet or any fork.</p>
+      </div>
+
+      <div class="rule" id="r2">
+        <span class="rule-id">Rule 2</span>
+        <p>An <strong>operation</strong> is a UTF-8 JSON object carried in a Bitcoin transaction through the Bitcoin Stamps data carrier. The five operations are <code>deploy</code>, <code>mint</code>, <code>transfer</code>, <code>setrecord</code> and <code>renew</code>. There is no burn, no revoke, no reclaim, no subdomain, and no batch operation other than the multi-name form of <code>mint</code>.</p>
+      </div>
+
+      <div class="rule" id="r3">
+        <span class="rule-id">Rule 3</span>
+        <p>A <strong>namespace</strong> is created by one <code>deploy</code> and is identified for all time by the transaction hash of that deploy. Every other operation names its namespace through the <code>hash</code> field. Two namespaces may contain the same name without conflict; a name is only unique within its namespace.</p>
+      </div>
+
+      <div class="rule" id="r4">
+        <span class="rule-id">Rule 4</span>
+        <p>A <strong>name</strong> is carried in the <code>tokenid</code> field as a Base64 string. Its decoded, lower-cased UTF-8 form is the identity used for every comparison and every database lookup. Two Base64 encodings that decode to the same text are the same name.</p>
+      </div>
+
+      <div class="rule" id="r5">
+        <span class="rule-id">Rule 5</span>
+        <p>A registration is a <strong>lease with an absolute end</strong>. Each entry carries an <code>expire_timestamp</code> in Unix seconds. The block timestamp of the transaction being processed is compared against it. There is no grace period and no redemption window.</p>
+      </div>
+
+      <div class="rule" id="r6">
+        <span class="rule-id">Rule 6</span>
+        <p>The <strong>creator</strong> of an operation is the address that funded input 0 of the transaction. The <strong>destination</strong> is the address of output 0, and the <strong>destination value</strong> is the satoshi value of output 0. Ownership checks compare against the creator; payment checks compare against the destination value.</p>
+      </div>
+    </section>
+
+    <section id="carrier" class="prose-wide">
+      <h2>2. The data carrier</h2>
+      <p>This section is identical in substance to the SRC-20 carrier. If you have implemented one, you have implemented the other. It is repeated here so that this document stands alone.</p>
+
+      <div class="rule" id="r7">
+        <span class="rule-id">Rule 7</span>
+        <p>The carrier prefix is the six ASCII bytes <code>stamp:</code>. The framed buffer is a <strong>two-byte big-endian length</strong>, then the prefix, then the JSON. The length counts the prefix and the JSON, and does not count itself.</p>
+      </div>
+
+      <div class="rule" id="r8">
+        <span class="rule-id">Rule 8</span>
+        <p>There are exactly two carriers: <strong>bare multisig</strong> and <strong>P2WSH</strong>. <code>OP_RETURN</code> is not an SRC-101 carrier. A transaction containing an <code>OP_RETURN</code> is noted as such and the output is otherwise ignored.</p>
+      </div>
+
+      <div class="rule" id="r9">
+        <span class="rule-id">Rule 9</span>
+        <p><strong>Bare multisig.</strong> Every output whose script ends in <code>OP_CHECKMULTISIG</code> contributes its public keys. The data chunk is the concatenation of each key with its first and last byte removed. That chunk is decrypted with ARC4, keyed on the <strong>byte-reversed transaction hash of the outpoint spent by input 0</strong>. After decryption, bytes 2 through 7 must equal <code>stamp:</code>, and the first two bytes give the length. The payload is the bytes after the prefix up to that length.</p>
+      </div>
+
+      <div class="rule" id="r10">
+        <span class="rule-id">Rule 10</span>
+        <p><strong>P2WSH.</strong> Every output at index greater than zero whose script is a 32-byte witness program contributes its 32 bytes. The chunks are concatenated in output order, trailing zero bytes are stripped, the first two bytes give the length, and the data that follows must begin with <code>stamp:</code>. A P2WSH-carried payload has its keyburn <strong>forced to 1</strong> by the decoder.</p>
+      </div>
+
+      <div class="rule" id="r11">
+        <span class="rule-id">Rule 11</span>
+        <p>P2WSH chunk collection is gated at block <strong>865000</strong>, a constant named for SRC-20 but shared by every Stamps sub-protocol. Below that height there is no P2WSH carriage for anything, SRC-101 included. Since SRC-101 does not begin until block 870652, in practice both carriers are available for the whole life of the protocol.</p>
+      </div>
+
+      <div class="rule" id="r12">
+        <span class="rule-id">Rule 12</span>
+        <p><strong>P2WSH takes precedence over multisig, with no fallback.</strong> When a transaction carries qualifying P2WSH data, the multisig branch is not attempted, even when the P2WSH data fails its own length check. The source marks this exclusion as consensus-load-bearing. Adding a fallback forks the ledger.</p>
+      </div>
+
+      <div class="rule" id="r13">
+        <span class="rule-id">Rule 13</span>
+        <p><strong>The destination value is read differently by carrier.</strong> On the multisig branch the destination value is always the satoshi value of output 0. On the P2WSH branch it is <strong>zero</strong> until block <strong>940000</strong>, at which height the decoder begins reading output 0. Because <code>mint</code> and <code>renew</code> require a payment measured against that value, <strong>a P2WSH-carried mint or renew cannot satisfy its payment check below block 940000</strong> unless the required amount is zero. <code>deploy</code>, <code>transfer</code> and <code>setrecord</code> do not read the destination value and are unaffected.</p>
+      </div>
+
+      <div class="rule" id="r14">
+        <span class="rule-id">Rule 14</span>
+        <p>The payload must decode as UTF-8 and parse as a JSON object. All top-level keys are <strong>lower-cased</strong> before any further processing, so <code>"P"</code>, <code>"OP"</code> and <code>"Hash"</code> are normalised to <code>p</code>, <code>op</code> and <code>hash</code>. JSON floating-point literals are parsed as decimals, not binary floats.</p>
+      </div>
+    </section>
+
+    <section id="heights" class="prose-wide">
+      <h2>3. Classification and activation heights</h2>
+
+      <div class="rule" id="r15">
+        <span class="rule-id">Rule 15</span>
+        <p>A payload is classified as SRC-101 when its lower-cased <code>p</code> value, upper-cased, equals <code>SRC-101</code>. The three sub-protocols the carrier recognises are <code>SRC-721</code>, <code>SRC-20</code> and <code>SRC-101</code>. Any other value makes the payload not a sub-protocol at all.</p>
+      </div>
+
+      <div class="rule" id="r16">
+        <span class="rule-id">Rule 16</span>
+        <p>A transaction is SRC-101 only when the classification in rule 15 holds <strong>and <code>keyburn == 1</code></strong>. This is the same keyburn requirement SRC-20 carries. On the P2WSH branch the decoder sets keyburn to 1 itself, so the requirement is effectively a multisig-branch condition.</p>
+      </div>
+
+      <div class="rule" id="r17">
+        <span class="rule-id">Rule 17</span>
+        <p>SRC-101 is valid only at block <strong>870652</strong> and above. Below that height no SRC-101 payload has any meaning. The constant is <code>BTC_SRC101_GENESIS_BLOCK</code>.</p>
+      </div>
+
+      <div class="rule" id="r18">
+        <span class="rule-id">Rule 18</span>
+        <p>At and above block <strong>872200</strong> the <code>mint</code> key set changes: <code>img</code> leaves the required set and key matching for <code>mint</code> alone relaxes from exact to superset. The constant is <code>BTC_SRC101_IMG_OPTIONAL_BLOCK</code>. Rules 21, 48 and 53 give the detail.</p>
+      </div>
+
+      <div class="rule" id="r19">
+        <span class="rule-id">Rule 19</span>
+        <p>At and above block <strong>940000</strong> the decoder reads output 0's value on the P2WSH branch, as rule 13 describes. The constant is <code>BTC_SRC101_OLGA_BLOCK</code>, annotated in the source as approximately March 2026. This height changes <em>payment visibility</em>, not carrier availability.</p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Every height that changes SRC-101 behaviour</caption>
+          <thead><tr><th scope="col">Height</th><th scope="col">Constant</th><th scope="col">What changes</th></tr></thead>
+          <tbody>
+            <tr><td>865000</td><td><code>BTC_SRC20_OLGA_BLOCK</code></td><td>P2WSH chunk collection begins, shared across sub-protocols. Predates SRC-101 genesis</td></tr>
+            <tr><td><strong>870652</strong></td><td><code>BTC_SRC101_GENESIS_BLOCK</code></td><td>SRC-101 becomes valid. Nothing before this height counts</td></tr>
+            <tr><td><strong>872200</strong></td><td><code>BTC_SRC101_IMG_OPTIONAL_BLOCK</code></td><td><code>img</code> becomes optional on <code>mint</code>, and <code>mint</code> key matching relaxes to superset</td></tr>
+            <tr><td><strong>940000</strong></td><td><code>BTC_SRC101_OLGA_BLOCK</code></td><td>Output 0's value becomes readable on the P2WSH branch, so P2WSH mint and renew payments can be satisfied</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note note-warn">
+        <span class="note-title">There is no end block</span>
+        <p>SRC-20 stops recognising Counterparty-carried operations at block 796000. <strong>SRC-101 has no equivalent cut-off.</strong> A Counterparty-carried SRC-101 is accepted at any height at or above genesis, and the classification gate does not impose the extra conditions SRC-20 imposes on its Counterparty path. Section 12 states this precisely.</p>
+      </div>
+    </section>
+
+    <section id="keysets" class="prose-wide">
+      <h2>4. The payload and its key sets</h2>
+
+      <div class="rule" id="r20">
+        <span class="rule-id">Rule 20</span>
+        <p>Each operation has a fixed key set. For <code>deploy</code>, <code>transfer</code>, <code>setrecord</code> and <code>renew</code>, the payload's key set and the operation's key set are compared with a <strong>symmetric difference</strong>, and that difference must be empty. <strong>Every listed key must be present and no other key may be present.</strong> A payload that fails this test is not an SRC-101 operation: it is discarded before any handler runs, leaves no row in any table, and produces no status code.</p>
+      </div>
+
+      <div class="rule" id="r21">
+        <span class="rule-id">Rule 21</span>
+        <p>For <code>mint</code> the comparison depends on height. <strong>Below block 872200</strong> it is the same symmetric difference as rule 20, against a set that includes <code>img</code>. <strong>At and above 872200</strong> it becomes a containment test: every key in the set must be present, and <strong>additional keys are permitted</strong>. The set at that height no longer includes <code>img</code>, which is why <code>img</code> becomes optional.</p>
+      </div>
+
+      <div class="rule" id="r22">
+        <span class="rule-id">Rule 22</span>
+        <p>The <code>op</code> value is compared case-insensitively against the five operation names. Any other value causes the payload to be discarded exactly as in rule 20. There is no unsupported-operation record for an unrecognised <code>op</code> at this stage.</p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>The five key sets, verbatim from check_src101_inputs</caption>
+          <thead><tr><th scope="col">Operation</th><th scope="col">Keys</th><th scope="col">Count</th><th scope="col">Matching</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>deploy</code></td>
+              <td><code>p</code>, <code>op</code>, <code>root</code>, <code>name</code>, <code>tick</code>, <code>lim</code>, <code>owner</code>, <code>rec</code>, <code>pri</code>, <code>desc</code>, <code>mintstart</code>, <code>mintend</code>, <code>wla</code>, <code>imglp</code>, <code>imgf</code>, <code>idua</code></td>
+              <td>16</td><td>Exact, all heights</td>
+            </tr>
+            <tr>
+              <td><code>mint</code>, below 872200</td>
+              <td><code>p</code>, <code>op</code>, <code>hash</code>, <code>toaddress</code>, <code>tokenid</code>, <code>dua</code>, <code>prim</code>, <code>sig</code>, <code>img</code>, <code>coef</code></td>
+              <td>10</td><td>Exact</td>
+            </tr>
+            <tr>
+              <td><code>mint</code>, 872200 and above</td>
+              <td><code>p</code>, <code>op</code>, <code>hash</code>, <code>toaddress</code>, <code>tokenid</code>, <code>dua</code>, <code>prim</code>, <code>sig</code>, <code>coef</code></td>
+              <td>9 required</td><td>Superset, extras allowed</td>
+            </tr>
+            <tr>
+              <td><code>transfer</code></td>
+              <td><code>p</code>, <code>op</code>, <code>hash</code>, <code>toaddress</code>, <code>tokenid</code></td>
+              <td>5</td><td>Exact, all heights</td>
+            </tr>
+            <tr>
+              <td><code>setrecord</code></td>
+              <td><code>p</code>, <code>op</code>, <code>hash</code>, <code>tokenid</code>, <code>type</code>, <code>data</code>, <code>prim</code></td>
+              <td>7</td><td>Exact, all heights</td>
+            </tr>
+            <tr>
+              <td><code>renew</code></td>
+              <td><code>p</code>, <code>op</code>, <code>hash</code>, <code>tokenid</code>, <code>dua</code></td>
+              <td>5</td><td>Exact, all heights</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rule" id="r23">
+        <span class="rule-id">Rule 23</span>
+        <p>Because matching is exact, <strong>every key in a set is mandatory even when it carries no value</strong>. A <code>mint</code> below 872200 that has no whitelist signature must still carry a <code>sig</code> key. The conventional way to satisfy this is the empty string, which the validator normalises to null (rule 27).</p>
+      </div>
+
+      <div class="rule" id="r24">
+        <span class="rule-id">Rule 24</span>
+        <p>A <code>deploy</code> must <strong>not</strong> carry a <code>hash</code> key. The key set forbids it, and the handler additionally requires that no namespace hash has been resolved.</p>
+      </div>
+
+      <div class="rule" id="r25">
+        <span class="rule-id">Rule 25</span>
+        <p>An operation with a key set naming <code>hash</code> is dispatched only after a namespace lookup succeeds. If <code>hash</code> is absent or does not resolve, the operation is recorded with status <code>IH</code> or <code>ND</code> respectively. <code>ND</code> is one of only two statuses that marks the parse as hard-invalid (rule 75).</p>
+      </div>
+
+      <div class="rule" id="r26">
+        <span class="rule-id">Rule 26</span>
+        <p>The <code>p</code> and <code>op</code> values are upper-cased in the stored record. A row therefore reads <code>SRC-101</code> and <code>MINT</code> regardless of the case used in the payload.</p>
+      </div>
+    </section>
+
+    <section id="fields" class="prose-wide">
+      <h2>5. Field rules</h2>
+      <p>Field validation runs before any operation handler. It is <strong>fail-closed</strong>: see rule 35.</p>
+
+      <div class="rule" id="r27">
+        <span class="rule-id">Rule 27</span>
+        <p>An empty string is normalised to null for <strong>every</strong> field, before any type-specific rule runs. This is what makes <code>"sig": ""</code> a valid way to satisfy the mandatory-key requirement without supplying a signature.</p>
+      </div>
+
+      <div class="rule" id="r28">
+        <span class="rule-id">Rule 28</span>
+        <p><strong>Numeric fields</strong> are <code>lim</code>, <code>dua</code>, <code>idua</code>, <code>mintstart</code>, <code>mintend</code> and <code>coef</code>. Each must match <code>^[0-9]*(\.[0-9]*)?$</code> and must coerce to an integer that is at least zero. The stored value is a plain <strong>integer</strong>, not a decimal. There is no upper bound and scientific notation is rejected by the pattern.</p>
+      </div>
+
+      <div class="rule" id="r29">
+        <span class="rule-id">Rule 29</span>
+        <span class="badge badge-neutral">Observation</span>
+        <p>Numeric coercion treats a JSON string and a JSON number differently. The string <code>"1.5"</code> matches the pattern but fails integer conversion, and the operation is discarded. The JSON number <code>1.5</code> matches the pattern and converts to <code>1</code>, <strong>silently truncating</strong>. Write integers as strings if you want a malformed value to fail loudly.</p>
+      </div>
+
+      <div class="rule" id="r30">
+        <span class="rule-id">Rule 30</span>
+        <p><strong><code>tokenid</code></strong> is either a Base64 string or a list of Base64 strings. Each string must match <code>^[A-Za-z0-9+/]+={0,2}$</code>, have a length that is a multiple of four, and be at most <strong>128 characters</strong> in encoded form. The decoded text is lower-cased and must not contain a special character (rule 33). Within a list, duplicates after decoding are rejected. The list form is normalised by re-encoding each decoded name with the standard alphabet; the string form is stored as submitted.</p>
+      </div>
+
+      <div class="rule" id="r31">
+        <span class="rule-id">Rule 31</span>
+        <span class="badge badge-neutral">Observation</span>
+        <p>The list form of <code>tokenid</code> is decoded with the <strong>URL-safe</strong> Base64 alphabet while the string form is decoded with the standard alphabet. The acceptance pattern in rule 30 permits only the standard alphabet, so <code>-</code> and <code>_</code> never reach either decoder. The distinction is therefore invisible in practice, but an implementer copying only the decoder will produce a different result for a name containing those characters.</p>
+      </div>
+
+      <div class="rule" id="r32">
+        <span class="rule-id">Rule 32</span>
+        <p><strong><code>prim</code></strong> accepts only the two strings <code>"true"</code> and <code>"false"</code>. A JSON boolean is <strong>not</strong> accepted: the comparison is textual. Because a field failure is fatal (rule 35), a payload carrying <code>"prim": true</code> is discarded in full.</p>
+      </div>
+
+      <div class="rule" id="r33">
+        <span class="rule-id">Rule 33</span>
+        <p><strong><code>root</code> and <code>name</code></strong>, and every decoded <code>tokenid</code>, are rejected if they contain a special character. The test rejects any Unicode character in category <code>Zs</code> (space separators) or <code>Cf</code> (format characters), any all-whitespace value, and any character in a fixed punctuation set that covers ASCII punctuation and a range of CJK full-width punctuation. Ordinary letters, digits and most symbols pass.</p>
+      </div>
+
+      <div class="rule" id="r34">
+        <span class="rule-id">Rule 34</span>
+        <p>The remaining typed fields:</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th scope="col">Field</th><th scope="col">Rule</th></tr></thead>
+            <tbody>
+              <tr><td><code>hash</code></td><td>Exactly 64 hexadecimal characters. Stored as the namespace identifier</td></tr>
+              <tr><td><code>owner</code>, <code>toaddress</code></td><td>Must decode as a Bitcoin address, Base58 or Bech32. Bech32 is accepted</td></tr>
+              <tr><td><code>rec</code></td><td>A list whose every member decodes as a Bitcoin address. Stored de-duplicated, and <strong>order is not preserved</strong></td></tr>
+              <tr><td><code>wla</code></td><td>A 66-character compressed public key beginning <code>02</code> or <code>03</code> that is a valid point on secp256k1</td></tr>
+              <tr><td><code>pri</code></td><td>An object whose keys all parse as integers and are unique, and whose values are all integers. Keys are name lengths, values are prices in satoshis</td></tr>
+              <tr><td><code>imglp</code>, <code>imgf</code>, <code>sig</code></td><td>Must be strings</td></tr>
+              <tr><td><code>img</code></td><td>Must be a list whose members are all strings</td></tr>
+              <tr><td><code>tick</code></td><td>Lower-cased, non-ASCII characters escaped. A SHA3-256 digest of the lower-cased value is stored alongside as <code>tick_hash</code></td></tr>
+              <tr><td><code>type</code>, <code>data</code></td><td>Stored unchanged, then combined: the value of <code>data</code> is written to a field named for the value of <code>type</code> with <code>_data</code> appended</td></tr>
+              <tr><td><code>desc</code></td><td>Carried through with no validation. Stored as the description</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="rule" id="r35">
+        <span class="rule-id">Rule 35</span>
+        <p><strong>Field validation is fail-closed.</strong> If any field fails its rule, the transaction is abandoned before dispatch. No handler runs, no operation-level status is assigned, and the record carries only the field-level error text. This is the sharpest divergence from SRC-20, where a bad field usually produces an invalid record with a meaningful status code and the operation is still reasoned about.</p>
+      </div>
+
+      <div class="rule" id="r36">
+        <span class="rule-id">Rule 36</span>
+        <span class="badge badge-neutral">Observation</span>
+        <p>The source declares two regular expressions named for Bitcoin and Ethereum address validation. <strong>Neither is ever referenced.</strong> Address validation is delegated to helpers that decode Base58 and Bech32 for Bitcoin, and apply a separate inline pattern for Ethereum. Reading the declared Bitcoin pattern and implementing it would wrongly reject every Bech32 address, since the declared pattern is Base58-only and caps length at 34 characters.</p>
+      </div>
+    </section>
+
+    <section id="deploy" class="prose-wide">
+      <h2>6. <code>deploy</code></h2>
+      <p>Opens a namespace. It creates no name and claims nothing.</p>
+
+      <div class="rule" id="r37">
+        <span class="rule-id">Rule 37</span>
+        <p>Length limits are enforced on six fields. <code>root</code>, <code>name</code>, <code>tick</code> and <code>imgf</code> must be shorter than <strong>32</strong>. <code>imglp</code> must be shorter than <strong>255</strong>. <code>pri</code> must have fewer than <strong>255</strong> entries. Failure gives status <code>IDP</code>.</p>
+      </div>
+
+      <div class="rule" id="r38">
+        <span class="rule-id">Rule 38</span>
+        <p>A missing value in any of those six is treated as over-length, because the length test substitutes an over-long placeholder when the field is absent. Combined with the exact key set of rule 20, all six are effectively mandatory and must carry a value.</p>
+      </div>
+
+      <div class="rule" id="r39">
+        <span class="rule-id">Rule 39</span>
+        <p>When <code>mintend</code> is missing or zero it is stored as <strong>18446744073709551615</strong>, which is 2^64 minus 1. This is the only place that constant appears in SRC-101, and it functions as "no end".</p>
+      </div>
+
+      <div class="rule" id="r40">
+        <span class="rule-id">Rule 40</span>
+        <p><strong><code>lim</code> is never enforced as a limit.</strong> No handler reads it as a cap on mints, names, or anything else. Its only functional role is as a presence sentinel: the namespace lookup treats a resolved <code>lim</code> of zero as "no such namespace". <strong>A namespace deployed with <code>lim</code> zero is permanently unusable</strong>, and every later operation against it fails with <code>ND</code>.</p>
+      </div>
+
+      <div class="rule" id="r41">
+        <span class="rule-id">Rule 41</span>
+        <p><code>mintstart</code> and <code>mintend</code> are compared against the <strong>block timestamp</strong>, not the block height. They are Unix seconds. The window is half-open: minting requires the block timestamp to be at least <code>mintstart</code> and strictly less than <code>mintend</code>.</p>
+      </div>
+
+      <div class="rule" id="r42">
+        <span class="rule-id">Rule 42</span>
+        <p>The <code>pri</code> object is written to a price table, one row per entry, keyed by name length. The key <code>0</code> acts as the fallback price for any length that has no explicit entry. A name whose length has no entry and where no <code>0</code> entry exists cannot be priced, and the operation fails with <code>IRL</code>.</p>
+      </div>
+
+      <div class="rule" id="r43">
+        <span class="rule-id">Rule 43</span>
+        <p><code>rec</code> is written to a recipients table. It is the set of addresses that may collect mint and renew payments; <code>owner</code> is stored but is not used in any payment or authorisation check.</p>
+      </div>
+
+      <div class="rule" id="r44">
+        <span class="rule-id">Rule 44</span>
+        <span class="badge badge-neutral">Observation</span>
+        <p>The in-block namespace lookup matches on a field that a <code>deploy</code> row never carries, because a deploy has no <code>hash</code> key and therefore no resolved namespace identifier. Consequently <strong>a namespace cannot be resolved from within the block that deployed it</strong>, and the database is only written after the block completes. A <code>mint</code> in the same block as its <code>deploy</code> fails with <code>ND</code>. Wait for the deploy to confirm before minting.</p>
+      </div>
+    </section>
+
+    <section id="mint" class="prose-wide">
+      <h2>7. <code>mint</code></h2>
+      <p>Claims one or more free names in a namespace for a paid term. The checks below run in the order given; the first failure ends the operation.</p>
+
+      <div class="rule" id="r45">
+        <span class="rule-id">Rule 45</span>
+        <p>The transaction's <strong>destination must be a member of the namespace's <code>rec</code> list</strong>. A payment to any other address, however large, gives status <code>IR</code>.</p>
+      </div>
+
+      <div class="rule" id="r46">
+        <span class="rule-id">Rule 46</span>
+        <p><code>tokenid</code> must be a <strong>non-empty list</strong> for a mint. The single-string form is rejected with <code>ITT</code>. A mint of one name is a list of one.</p>
+      </div>
+
+      <div class="rule" id="r47">
+        <span class="rule-id">Rule 47</span>
+        <p><code>coef</code> must be an integer in the range <strong>0 to 1000 inclusive</strong>. It expresses a discount in parts per thousand. Out of range gives <code>ITC</code>.</p>
+      </div>
+
+      <div class="rule" id="r48">
+        <span class="rule-id">Rule 48</span>
+        <p><strong>Below block 872200</strong>, <code>img</code> must be a list. <strong>At and above 872200</strong>, an absent <code>img</code> is replaced by a list of nulls the same length as <code>tokenid</code>, and a present-but-not-a-list <code>img</code> gives <code>ITI</code>.</p>
+      </div>
+
+      <div class="rule" id="r49">
+        <span class="rule-id">Rule 49</span>
+        <p><code>dua</code> must be an integer greater than zero, and the namespace's <code>idua</code> must be greater than zero. Failures give <code>ITD</code> and <code>ITID</code>. The submitted <code>dua</code> is then <strong>rounded up to the next multiple of <code>idua</code></strong>, and the number of rounds is <code>dua / idua</code>. The rounded value, not the submitted value, is stored and used everywhere afterwards.</p>
+      </div>
+
+      <div class="rule" id="r50">
+        <span class="rule-id">Rule 50</span>
+        <p>The required payment is the sum, over each name being minted, of the price for that name's decoded length multiplied by the number of rounds. Prices come from the namespace's price table, with the <code>0</code> entry as fallback.</p>
+      </div>
+
+      <div class="rule" id="r51">
+        <span class="rule-id">Rule 51</span>
+        <p><strong>The whitelist discount.</strong> The effective coefficient starts at <strong>1000</strong>, meaning full price, and <code>coef</code> is ignored unless proved. If <code>sig</code> is present and non-empty, the indexer verifies an ECDSA signature over SHA-256, against the namespace's <code>wla</code> public key, over the JSON serialisation of one of two payloads, tried in order:</p>
+        <pre><code>{"hash": &lt;deploy hash&gt;, "coef": "&lt;coef&gt;", "address": &lt;creator&gt;,
+ "tokenid": &lt;tokenid as submitted&gt;, "dua": "&lt;rounded dua&gt;"}
+
+{"hash": &lt;deploy hash&gt;, "coef": "&lt;coef&gt;", "address": &lt;creator&gt;,
+ "dua": "&lt;rounded dua&gt;"}</code></pre>
+        <p>If either verifies, the effective coefficient becomes <code>coef</code>. If neither does, the operation fails with <code>IRS</code>. Note that <code>coef</code> and <code>dua</code> are serialised as <strong>strings</strong>, that <code>dua</code> is the value after rounding, and that <code>tokenid</code> is the value as submitted rather than the normalised form.</p>
+      </div>
+
+      <div class="rule" id="r52">
+        <span class="rule-id">Rule 52</span>
+        <p>The payment check is <code>destination value &gt;= required payment &times; effective coefficient / 1000</code>. Failure gives <code>IRV</code>. Overpayment is accepted and is not refunded by the protocol.</p>
+      </div>
+
+      <div class="rule" id="r53">
+        <span class="rule-id">Rule 53</span>
+        <p>When the namespace declares both <code>imglp</code> and <code>imgf</code>, an image URL is derived per name as <code>imglp</code> then the decoded name then <code>.</code> then <code>imgf</code>. <strong>Below block 872200</strong> the submitted <code>img</code> entries must equal the derived values exactly, or the operation fails with <code>IRM</code>. <strong>At and above 872200</strong> the submitted values are discarded and the derived values are written in their place.</p>
+      </div>
+
+      <div class="rule" id="r54">
+        <span class="rule-id">Rule 54</span>
+        <p>The block timestamp must be at least <code>mintstart</code> (else <code>UT</code>) and strictly less than <code>mintend</code> (else <code>OT</code>).</p>
+      </div>
+
+      <div class="rule" id="r55">
+        <span class="rule-id">Rule 55</span>
+        <p><strong>Names already held with a live expiry are removed from the list and the mint proceeds without them.</strong> For each name, the current entry is looked up; if its expiry is later than the block timestamp the name is dropped, and otherwise the current holder is recorded as the new entry's <code>preowner</code>. Only if the list becomes empty does the operation fail, with status <code>DM</code>. There is no refund and no notification for the dropped names.</p>
+      </div>
+
+      <div class="rule" id="r56">
+        <span class="rule-id">Rule 56</span>
+        <p>The new expiry is <code>block timestamp + rounded dua &times; 31536000</code>. The constant 31536000 is 365 days in seconds, so <code>dua</code> is a count of 365-day years. Leap seconds and leap days are not modelled.</p>
+      </div>
+
+      <div class="rule" id="r57">
+        <span class="rule-id">Rule 57</span>
+        <p>The new owner is the value of <code>toaddress</code>, which need not be the creator. The entry's resolved Bitcoin address is set to that same owner, its resolved Ethereum address is left empty, and its text record is left empty.</p>
+      </div>
+    </section>
+
+    <section id="transfer" class="prose-wide">
+      <h2>8. <code>transfer</code></h2>
+
+      <div class="rule" id="r58">
+        <span class="rule-id">Rule 58</span>
+        <p>The name must already have an entry with an owner and an expiry, else <code>NM</code>. The <strong>creator must equal the current owner</strong>, else <code>NO</code>. The block timestamp must be strictly less than the expiry, else <code>OE</code>.</p>
+      </div>
+
+      <div class="rule" id="r59">
+        <span class="rule-id">Rule 59</span>
+        <p><code>tokenid</code> for a transfer is the <strong>single-string</strong> form. The lookup compares a scalar decoded name; supplying a list produces a lookup that cannot match.</p>
+      </div>
+
+      <div class="rule" id="r60">
+        <span class="rule-id">Rule 60</span>
+        <p>The expiry is <strong>carried over unchanged</strong>. A transfer does not extend, reset or shorten the term. Buying a name late in its term buys the remainder of that term.</p>
+      </div>
+
+      <div class="rule" id="r61">
+        <span class="rule-id">Rule 61</span>
+        <p><strong>Records do not survive a transfer.</strong> The owners row written for a transfer sets the resolved Bitcoin address, the resolved Ethereum address and the text record to empty, and the primary flag to false. The new owner must issue a fresh <code>setrecord</code> to point the name anywhere.</p>
+      </div>
+
+      <div class="rule" id="r62">
+        <span class="rule-id">Rule 62</span>
+        <p>There is no payment check on a transfer. The destination value is not read, and no fee is owed to the namespace.</p>
+      </div>
+    </section>
+
+    <section id="renew" class="prose-wide">
+      <h2>9. <code>renew</code></h2>
+
+      <div class="rule" id="r63">
+        <span class="rule-id">Rule 63</span>
+        <p>The name must have an entry, the creator must be the current owner, and <strong>the block timestamp must be strictly less than the current expiry</strong>. Renewing an expired name is refused with <code>OE</code>. This is the rule with the largest practical consequence in the protocol.</p>
+      </div>
+
+      <div class="rule" id="r64">
+        <span class="rule-id">Rule 64</span>
+        <p><code>dua</code> is validated and rounded exactly as in rule 49. The required payment is the price for <strong>the length of the decoded name</strong>, with the <code>0</code> entry as fallback, multiplied by the number of rounds.</p>
+      </div>
+
+      <div class="rule" id="r65">
+        <span class="rule-id">Rule 65</span>
+        <p><strong>A renew gets no whitelist discount.</strong> There is no <code>coef</code> and no <code>sig</code> in the renew key set, and the payment check is a plain <code>destination value &gt;= required payment</code>. A holder who minted at a discount renews at full price.</p>
+      </div>
+
+      <div class="rule" id="r66">
+        <span class="rule-id">Rule 66</span>
+        <p>The new expiry is <strong>the existing expiry plus the term</strong>, not the block timestamp plus the term. Renewing early loses nothing. The handler contains a branch that would restart the clock from the block timestamp for an already-expired entry, but rule 63 makes that branch unreachable.</p>
+      </div>
+
+      <div class="rule" id="r67">
+        <span class="rule-id">Rule 67</span>
+        <p>Owner, records and primary flag are all carried over unchanged by a renew.</p>
+      </div>
+    </section>
+
+    <section id="setrecord" class="prose-wide">
+      <h2>10. <code>setrecord</code></h2>
+
+      <div class="rule" id="r68">
+        <span class="rule-id">Rule 68</span>
+        <p>The name must have an entry, the creator must be the current owner where a creator is present, and the block timestamp must be strictly less than the expiry. The three failures are <code>NM</code>, <code>NO</code> and <code>OE</code>.</p>
+      </div>
+
+      <div class="rule" id="r69">
+        <span class="rule-id">Rule 69</span>
+        <p>The pair <code>type</code> and <code>data</code> is combined into a field named <code>&lt;type&gt;_data</code>. The two the handler understands are <code>address</code> and <code>txt</code>, giving <code>address_data</code> and <code>txt_data</code>. <strong>At least one of the two must be present and non-empty</strong>, else <code>ID</code>. A <code>type</code> the handler does not understand leaves both empty and therefore also gives <code>ID</code>.</p>
+      </div>
+
+      <div class="rule" id="r70">
+        <span class="rule-id">Rule 70</span>
+        <p><code>address_data</code> is an object. Its <code>btc</code> member, when present and non-empty, must decode as a Bitcoin address. Its <code>eth</code> member, when present and non-empty, is <strong>not an address but a signature</strong>: the hexadecimal signature of an Ethereum personal-sign message whose text is the hexadecimal, byte-reversed hash of the transaction spent by input 0. The signer is recovered from that signature, validated as an Ethereum address, and stored <strong>with the leading <code>0x</code> removed</strong>.</p>
+      </div>
+
+      <div class="rule" id="r71">
+        <span class="rule-id">Rule 71</span>
+        <p>When <code>prim</code> is true, <code>address_data</code> must be present and its <code>btc</code> member must equal the creator, else <code>IDB</code>. You cannot mark a name primary for an address you are not currently spending from.</p>
+      </div>
+
+      <div class="rule" id="r72">
+        <span class="rule-id">Rule 72</span>
+        <p>Setting the primary flag <strong>clears it from every other name</strong> that the same resolved Bitcoin address holds in the same namespace. One primary name per address per namespace.</p>
+      </div>
+
+      <div class="rule" id="r73">
+        <span class="rule-id">Rule 73</span>
+        <p>A <code>setrecord</code> that supplies only one of the two record kinds leaves the other as it was. Records are merged, not replaced wholesale. Only a <code>transfer</code> clears them (rule 61).</p>
+      </div>
+    </section>
+
+    <section id="validity" class="prose-wide">
+      <h2>11. Validity and state</h2>
+
+      <div class="rule" id="r74">
+        <span class="rule-id">Rule 74</span>
+        <p>There are three outcomes, and they are not the same thing:</p>
+        <dl class="terms">
+          <dt><span class="badge badge-valid">Valid</span></dt>
+          <dd>The handler completed and marked the record valid. A row is written to both the operation table and the valid table, and the owners projection is updated.</dd>
+          <dt><span class="badge badge-invalid">Invalid</span></dt>
+          <dd>The handler ran and assigned a status code. A row is written to the operation table with that status. Nothing changes in the register.</dd>
+          <dt><span class="badge badge-neutral">Excluded</span></dt>
+          <dd>The payload never became an SRC-101 operation. Failed key matching, an unrecognised <code>op</code>, a failed field rule, or a failed classification. <strong>No row anywhere, no status code.</strong></dd>
+        </dl>
+      </div>
+
+      <div class="rule" id="r75">
+        <span class="rule-id">Rule 75</span>
+        <p>Only <code>ND</code> and <code>UO</code> mark the parse itself as invalid; every other status is advisory. The block processor <strong>discards that flag</strong> and keys everything on whether the record was marked valid, so in practice the distinction has no effect on stored state.</p>
+      </div>
+
+      <div class="rule" id="r76">
+        <span class="rule-id">Rule 76</span>
+        <p>Five tables hold SRC-101 state: <code>SRC101</code> for every parsed operation, <code>SRC101Valid</code> for the valid subset, <code>src101price</code> for deploy prices, <code>recipients</code> for deploy recipient lists, and <code>owners</code> for the current register. The <a href="reference.html#tables">reference</a> describes each.</p>
+      </div>
+
+      <div class="rule" id="r77">
+        <span class="rule-id">Rule 77</span>
+        <p><strong>SRC-101 contributes nothing to the block ledger hash.</strong> The hash is computed from valid stamps and the SRC-20 string only. There is no cross-implementation consensus check for SRC-101 comparable to the SRC-20 ledger-hash comparison, so an SRC-101 divergence between two indexers can persist silently.</p>
+      </div>
+
+      <div class="rule" id="r78">
+        <span class="rule-id">Rule 78</span>
+        <p><strong>SRC-101 shares no state with the SRC-20 ledger.</strong> No SRC-101 operation reads or writes an SRC-20 balance, and no SRC-20 operation touches a name. A transaction is classified as one protocol or the other, never both.</p>
+      </div>
+
+      <div class="rule" id="r79">
+        <span class="rule-id">Rule 79</span>
+        <p>Within a block, operations are processed in transaction order, and a name minted earlier in a block is visible to a later transaction in the same block. Namespaces are the exception, per rule 44.</p>
+      </div>
+
+      <div class="rule" id="r80">
+        <span class="rule-id">Rule 80</span>
+        <p><strong>There is no mempool state.</strong> An unconfirmed transaction has no SRC-101 meaning. Nothing about a name changes until the block containing the operation is processed.</p>
+      </div>
+    </section>
+
+    <section id="counterparty" class="prose-wide">
+      <h2>12. The Counterparty relationship</h2>
+
+      <div class="rule" id="r81">
+        <span class="rule-id">Rule 81</span>
+        <p>An SRC-101 transaction that also carries a Counterparty asset identifier is accepted, at any height at or above genesis. The classification is a plain disjunction: SRC-101 with an asset identifier, or SRC-101 without one. <strong>Both branches are open forever.</strong></p>
+      </div>
+
+      <div class="rule" id="r82">
+        <span class="rule-id">Rule 82</span>
+        <p>The Counterparty branch for SRC-101 imposes <strong>none</strong> of the extra conditions that the equivalent SRC-20 branch imposes. SRC-20 requires the asset identifier to begin with <code>A</code>, requires a supply of zero, and stops at block 796000. SRC-101 requires only that an asset identifier is present.</p>
+      </div>
+
+      <div class="rule" id="r83">
+        <span class="rule-id">Rule 83</span>
+        <p>An indexer that wants to serve SRC-101 alone still needs Counterparty issuance data available, because the classification gate reads whether an asset identifier was resolved for the transaction. It does not need Counterparty history for SRC-101 state, since no SRC-101 state predates block 870652.</p>
+      </div>
+    </section>
+
+    <hr class="perf">
+
+    <section class="prose-wide">
+      <h2 id="sources">Sources for this document</h2>
+      <ul>
+        <li><code>indexer/src/index_core/src101.py</code> for rules 20 to 73 and the status codes.</li>
+        <li><code>indexer/src/config.py</code> for rules 11, 17, 18, 19, 39 and the table names in rule 76.</li>
+        <li><code>indexer/src/index_core/models.py</code> for rules 14, 15, 16, 17, 81 and 82.</li>
+        <li><code>indexer/src/index_core/transaction_utils.py</code> for rules 7 to 13.</li>
+        <li><code>indexer/src/index_core/database.py</code> for rules 42, 43, 44, 76 and the projection described in the reference.</li>
+        <li><code>indexer/src/index_core/blocks.py</code> for rules 75, 77 and 79.</li>
+        <li><code>indexer/src/index_core/util.py</code> for rules 30, 33, 34 and 36.</li>
+      </ul>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2>This site</h2>
+        <ul>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="specification.html">Specification</a></li>
+          <li><a href="guide.html">Guide</a></li>
+          <li><a href="reference.html">Reference</a></li>
+          <li><a href="vectors.html">Test vectors</a></li>
+          <li><a href="validator.html">Payload validator</a></li>
+          <li><a href="changelog.html">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Related protocols</h2>
+        <p><img src="assets/stampchain-logo-480.svg" alt="" width="88" height="22" style="opacity:.75"></p>
+        <ul>
+          <li><a href="https://bitcoinuniverseio.github.io/src-20/">SRC-20, same carrier</a></li>
+          <li><a href="https://github.com/stampchain-io/btc_stamps">Bitcoin Stamps indexer</a></li>
+          <li><a href="https://stampchain.io/">Stampchain explorer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://docs.bitcoinuniverse.io">Documentation portal</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101">This repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101/security/advisories/new">Report a vulnerability</a></li>
+          <li><a href="llms.txt">llms.txt</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon">
+      <p>Document version 2026.09.01. Lifecycle experimental. Rules verified against <code>stampchain-io/btc_stamps</code> 1.9.3.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

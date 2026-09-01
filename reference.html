@@ -1,19 +1,436 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Discover SRC-101 — Bitcoin Universe</title>
-  <meta name="description" content="A plain-language look at SRC-101 and its onchain experience.">
-  <meta name="theme-color" content="#09090f">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SRC-101 reference</title>
+<meta name="description" content="SRC-101 terminology, status codes, storage tables, indexer semantics for ordering, confirmation, reorg and mempool, the Counterparty relationship, limitations, security considerations and an implementation checklist.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/src-101/reference.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="search-index" href="search-index.json">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SRC-101 reference">
+<meta property="og:description" content="Indexer semantics, status codes, storage tables, limitations and an implementation checklist for SRC-101.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/src-101/reference.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/src-101/assets/og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<script>try{var t=localStorage.getItem('src101-docs-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
-<body style="--accent:#ff4d8d;--accent-2:#ffcc70">
-<div class="topbar"><div class="wrap nav"><a class="brand" href="index.html"><span class="brand-mark">101</span><span>SRC-101</span></a><nav class="nav-links" aria-label="Main navigation"><a href="index.html">Home</a><a href="reference.html" aria-current="page">Discover</a><a href="guide.html">Get started</a><a class="nav-cta" href="https://inscribe.bitcoinuniverse.io/">Open Bitcoin Universe ↗</a></nav></div></div>
-<main>
-  <div class="wrap hero compact"><div><div class="eyebrow">Discover SRC-101</div><h1>See the idea behind the <span class="gradient">transaction.</span></h1><p class="lede">SRC-101 names belong to a namespace and carry an ownership lifecycle. They can move, renew, and connect to signed records while their history remains anchored through Bitcoin Stamps.</p><div class="actions"><a class="button primary" href="guide.html">Get started →</a><a class="button secondary" href="index.html">Back home</a></div></div><div class="hero-art"><div class="orbit"><img class="logo-art core" src="assets/stampchain-logo-480.svg" alt=""><span class="spark one">Bitcoin Stamps</span><span class="spark two">lasting culture</span><span class="spark three">onchain history</span></div></div></div>
-  <section><div class="wrap"><div class="section-head"><div><div class="eyebrow">How it comes together</div><h2>Four ideas. One connected experience.</h2></div><p>Protocol details matter most when they help you understand what you are about to create, collect, or send.</p></div><div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><article class="card"><span class="num">01 / IDEA</span><h3>Namespaces</h3><p>A deployment establishes the space where SRC-101 names can live.</p></article><article class="card"><span class="num">02 / IDEA</span><h3>Names</h3><p>Each name uses an encoded token identity tied to its namespace.</p></article><article class="card"><span class="num">03 / IDEA</span><h3>Lifecycle</h3><p>Mint, transfer, renew, and record updates create the name’s timeline.</p></article><article class="card"><span class="num">04 / IDEA</span><h3>Records</h3><p>Supported signed data can connect a name to useful destinations.</p></article></div></div></section>
-  <section><div class="wrap spotlight"><div class="eyebrow">Keep the meaning clear</div><h2>Bitcoin confirms the transaction. Compatible services reveal the experience.</h2><p>Names can be visually similar, renewal timing matters, and record updates affect where a name points. Verify the namespace, exact name, recipient, duration, and signed data before approval.</p></div></section>
-  <section><div class="wrap"><div class="section-head"><div><div class="eyebrow">Explore the ecosystem</div><h2>Follow the story further.</h2></div><p>These community resources offer more context around the protocol and the world growing around it.</p></div><div class="source-list"><a class="source" href="https://stampchain.io/" target="_blank" rel="noreferrer"><span>Explore Bitcoin Stamps</span><span>Visit ↗</span></a><a class="source" href="https://stampchain.io/faq" target="_blank" rel="noreferrer"><span>Visit the Stamps FAQ</span><span>Visit ↗</span></a></div></div></section>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 26 30" aria-hidden="true" focusable="false">
+        <rect x="1" y="1" width="24" height="28" rx="2" fill="var(--card)" stroke="var(--rule)" stroke-width="1.2"/>
+        <rect x="1" y="1" width="3.2" height="28" rx="1.4" fill="var(--accent)"/>
+        <rect x="7.5" y="6" width="13" height="3.4" rx="1" fill="var(--ink)"/>
+        <rect x="7.5" y="13" width="11" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="17.5" width="13" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="22" width="7.5" height="1.9" rx=".9" fill="var(--lapsed)"/>
+      </svg>
+      <span>SRC-101</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="specification.html">Specification</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="reference.html" aria-current="page">Reference</a></li>
+        <li><a href="vectors.html">Test vectors</a></li>
+        <li><a href="validator.html">Validator</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <form class="search" id="site-search" role="search" hidden>
+        <label class="visually-hidden" for="q">Search the SRC-101 documentation</label>
+        <input class="search-input" id="q" type="search" placeholder="Search (press /)" autocomplete="off">
+        <ul class="search-results" id="search-results" aria-live="polite"></ul>
+      </form>
+      <button class="theme-toggle" id="theme-toggle" type="button" hidden>Dark</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="hero">
+      <p class="eyebrow">Reference &middot; Indexer semantics &middot; btc_stamps 1.9.3</p>
+      <h1>SRC-101 reference</h1>
+      <p class="lede">What an implementer needs after the specification: the vocabulary, every status code, the five tables that hold state, how ordering, confirmation and reorgs actually behave, what the protocol cannot do, and a checklist to work through before you claim your indexer is correct.</p>
+    </div>
+
+    <div class="toc">
+      <p>Contents</p>
+      <ol>
+        <li><a href="#terms">Terminology</a></li>
+        <li><a href="#statuses">Status codes</a></li>
+        <li><a href="#tables">Storage tables</a></li>
+        <li><a href="#semantics">Indexer semantics</a></li>
+        <li><a href="#reorg">Reorg and the owners rebuild</a></li>
+        <li><a href="#counterparty">The Counterparty relationship</a></li>
+        <li><a href="#family">The Stamps protocol family</a></li>
+        <li><a href="#size">Size and fee considerations</a></li>
+        <li><a href="#limitations">Limitations</a></li>
+        <li><a href="#security">Security considerations</a></li>
+        <li><a href="#checklist">Implementation checklist</a></li>
+      </ol>
+    </div>
+
+    <hr class="perf">
+
+    <section id="terms" class="prose-wide">
+      <h2>1. Terminology</h2>
+      <dl class="terms">
+        <dt>Namespace</dt>
+        <dd>The scope created by one <code>deploy</code>, identified by that deploy's transaction hash. Called the deploy hash everywhere in the code.</dd>
+        <dt>Name</dt>
+        <dd>The decoded, lower-cased UTF-8 form of a <code>tokenid</code>. Stored as <code>tokenid_utf8</code> and used for every lookup. Unique within a namespace only.</dd>
+        <dt>Token id</dt>
+        <dd>The Base64 form of a name. Three variants are stored: <code>tokenid_origin</code> as submitted, <code>tokenid</code> normalised, and <code>tokenid_utf8</code> decoded.</dd>
+        <dt>Entry</dt>
+        <dd>One row in the owners table: one name in one namespace, with an owner, a previous owner, an expiry, records and a primary flag.</dd>
+        <dt>Creator</dt>
+        <dd>The address that funded input 0. Every ownership check compares against this.</dd>
+        <dt>Destination</dt>
+        <dd>The address of output 0. Mint and renew require it to be a namespace recipient.</dd>
+        <dt>Destination value</dt>
+        <dd>The satoshi value of output 0. The payment checks measure against this, and it is read differently by carrier below block 940000.</dd>
+        <dt>Term, <code>dua</code></dt>
+        <dd>A count of years of 31536000 seconds. Rounded up to a multiple of the namespace's <code>idua</code> before use.</dd>
+        <dt>Granularity, <code>idua</code></dt>
+        <dd>The namespace's term unit, also in years. Must be greater than zero or no mint or renew can succeed.</dd>
+        <dt>Rounds</dt>
+        <dd>The rounded term divided by the granularity. The multiplier applied to the unit price.</dd>
+        <dt>Coefficient, <code>coef</code></dt>
+        <dd>A discount in parts per thousand, 0 to 1000. Ignored unless a signature from the namespace whitelist key proves it.</dd>
+        <dt>Whitelist key, <code>wla</code></dt>
+        <dd>The namespace's compressed secp256k1 public key, used to verify discount authorisations.</dd>
+        <dt>Recipients, <code>rec</code></dt>
+        <dd>The addresses a namespace will accept payment at. Stored de-duplicated, with order not preserved.</dd>
+        <dt>Primary</dt>
+        <dd>A per-address, per-namespace flag marking one name as the holder's main one. Setting it clears it elsewhere.</dd>
+        <dt>Excluded</dt>
+        <dd>A payload that never became an SRC-101 operation: no row, no status code, no trace.</dd>
+      </dl>
+    </section>
+
+    <section id="statuses" class="prose-wide">
+      <h2>2. Status codes</h2>
+      <p>Two families exist and they behave differently. <strong>Field-level codes</strong> are assigned by the validator before any handler runs, and they cause the operation to be abandoned. <strong>Operation-level codes</strong> are assigned by a handler, and they produce a recorded invalid operation.</p>
+
+      <h3>Operation-level codes</h3>
+      <div class="table-scroll">
+        <table>
+          <caption>Assigned by the five handlers. Only ND and UO flag the parse as hard-invalid</caption>
+          <thead><tr><th scope="col">Code</th><th scope="col">Meaning</th><th scope="col">Raised by</th></tr></thead>
+          <tbody>
+            <tr><td><code>ND</code></td><td>No such namespace. The deploy hash did not resolve</td><td>Any operation needing a namespace</td></tr>
+            <tr><td><code>UO</code></td><td>Unsupported operation. Dispatch reached an unrecognised <code>op</code></td><td>Dispatch</td></tr>
+            <tr><td><code>IH</code></td><td>The operation needs a namespace hash and none was resolved</td><td>mint, transfer, renew, setrecord</td></tr>
+            <tr><td><code>IND</code></td><td>The operation needs a term and none was supplied</td><td>mint, renew</td></tr>
+            <tr><td><code>IDP</code></td><td>A deploy field exceeded its length limit, or was absent</td><td>deploy</td></tr>
+            <tr><td><code>IR</code></td><td>Output 0 does not pay a namespace recipient</td><td>mint</td></tr>
+            <tr><td><code>ITT</code></td><td><code>tokenid</code> is not a non-empty list</td><td>mint</td></tr>
+            <tr><td><code>ITC</code></td><td><code>coef</code> is not an integer in 0 to 1000</td><td>mint</td></tr>
+            <tr><td><code>ITI</code></td><td><code>img</code> is not a list where a list is required</td><td>mint</td></tr>
+            <tr><td><code>ITD</code></td><td><code>dua</code> is not an integer greater than zero</td><td>mint, renew</td></tr>
+            <tr><td><code>ITID</code></td><td>The namespace's <code>idua</code> is not greater than zero</td><td>mint, renew</td></tr>
+            <tr><td><code>IRL</code></td><td>No price entry for this name length and no fallback entry</td><td>mint, renew</td></tr>
+            <tr><td><code>IRS</code></td><td>The discount signature did not verify against either accepted message</td><td>mint</td></tr>
+            <tr><td><code>IRM</code></td><td>A submitted <code>img</code> entry did not match the derived URL. Below block 872200 only</td><td>mint</td></tr>
+            <tr><td><code>IRV</code></td><td>Output 0's value is below the required payment</td><td>mint, renew</td></tr>
+            <tr><td><code>UT</code></td><td>The block timestamp is before <code>mintstart</code></td><td>mint</td></tr>
+            <tr><td><code>OT</code></td><td>The block timestamp is at or after <code>mintend</code></td><td>mint</td></tr>
+            <tr><td><code>DM</code></td><td>Every requested name was already held with a live expiry</td><td>mint</td></tr>
+            <tr><td><code>NM</code></td><td>The name has never been minted, or has no expiry</td><td>transfer, renew, setrecord</td></tr>
+            <tr><td><code>NO</code></td><td>The creator is not the current owner</td><td>transfer, renew, setrecord</td></tr>
+            <tr><td><code>OE</code></td><td>The term has already expired</td><td>transfer, renew, setrecord</td></tr>
+            <tr><td><code>ID</code></td><td>Neither an address record nor a text record was produced</td><td>setrecord</td></tr>
+            <tr><td><code>IDB</code></td><td>The primary flag was claimed but the <code>btc</code> record is not the creator</td><td>setrecord</td></tr>
+            <tr><td><code>IT</code></td><td>Declared for an invalid token id at operation level</td><td>Declared, not reached by the handlers</td></tr>
+            <tr><td><code>UE</code></td><td>An unexpected exception escaped a handler</td><td>Any</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Field-level codes</h3>
+      <p>These appear in the status text as a prefix and mean the operation was <strong>excluded</strong>, not recorded as invalid.</p>
+      <div class="table-scroll">
+        <table>
+          <caption>Assigned by the validator before dispatch</caption>
+          <thead><tr><th scope="col">Code</th><th scope="col">Field</th><th scope="col">Cause</th></tr></thead>
+          <tbody>
+            <tr><td><code>NN</code></td><td><code>lim</code>, <code>dua</code>, <code>idua</code>, <code>mintstart</code>, <code>mintend</code>, <code>coef</code></td><td>Failed the numeric pattern, or would not convert to an integer of at least zero</td></tr>
+            <tr><td><code>IT</code></td><td><code>tokenid</code></td><td>Not valid Base64, over 128 characters, a duplicate within a list, or a decoded name with a special character</td></tr>
+            <tr><td><code>IH</code></td><td><code>hash</code></td><td>Not 64 hexadecimal characters</td></tr>
+            <tr><td><code>IA</code></td><td><code>owner</code>, <code>toaddress</code>, <code>root</code>, <code>name</code></td><td>Not a decodable Bitcoin address, or a value containing a special character</td></tr>
+            <tr><td><code>IAL</code></td><td><code>rec</code></td><td>Not a list, or a member that is not a decodable Bitcoin address</td></tr>
+            <tr><td><code>IWLA</code></td><td><code>wla</code></td><td>Not a 66-character compressed key on secp256k1 beginning 02 or 03</td></tr>
+            <tr><td><code>IPC</code></td><td><code>pri</code></td><td>Not an object, a key that is not an integer, a duplicate key, or a value that is not an integer</td></tr>
+            <tr><td><code>IP</code></td><td><code>prim</code></td><td>Not the string <code>"true"</code> or the string <code>"false"</code></td></tr>
+            <tr><td><code>IIM</code></td><td><code>imglp</code>, <code>imgf</code>, <code>sig</code>, <code>img</code></td><td>Wrong type. The first three must be strings, <code>img</code> must be a list of strings</td></tr>
+            <tr><td><code>IBT</code></td><td><code>block_time</code></td><td>Not a timestamp. Indexer-internal</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tables" class="prose-wide">
+      <h2>3. Storage tables</h2>
+      <div class="table-scroll">
+        <table>
+          <caption>The five tables that hold SRC-101 state</caption>
+          <thead><tr><th scope="col">Table</th><th scope="col">Written when</th><th scope="col">Holds</th></tr></thead>
+          <tbody>
+            <tr><td><code>SRC101</code></td><td>Every parsed operation, valid or not</td><td>The full operation record: transaction identifiers, block index, every payload field, the destination and its value, the block time and the status</td></tr>
+            <tr><td><code>SRC101Valid</code></td><td>The operation was marked valid</td><td>The same shape. This is the table the owners projection is rebuilt from</td></tr>
+            <tr><td><code>src101price</code></td><td>A record carries <code>pri</code></td><td>One row per price entry, keyed by name length, with the price in satoshis and the owning deploy hash</td></tr>
+            <tr><td><code>recipients</code></td><td>A record carries <code>rec</code></td><td>The addresses a namespace will accept payment at</td></tr>
+            <tr><td><code>owners</code></td><td>Any valid operation that changes an entry</td><td>The current register: namespace, token id in all three forms, image URL, previous owner, owner, text record, expiry, resolved Bitcoin and Ethereum addresses, and the primary flag</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The owners row is keyed by the protocol string, the deploy hash and the normalised token id joined together, and it is written as an upsert. An entry is never deleted by an operation: a name that expires keeps its row with its old owner and old expiry, and a later mint overwrites that row.</p>
+      <p>A namespace lookup resolves nine values from the deploy: the limit, the price object, the mint window start and end, the recipient list, the whitelist key, the image prefix and suffix, and the granularity. It is cached, then read from the current block, then read from the valid table. <strong>A resolved limit of zero means "not found" at every layer</strong>, which is why rule 40 matters.</p>
+    </section>
+
+    <section id="semantics" class="prose-wide">
+      <h2>4. Indexer semantics</h2>
+
+      <h3>Ordering</h3>
+      <p>Operations within a block are processed in transaction order, and a name minted earlier in a block is visible to a later transaction in the same block through an in-block lookup that runs before the database is consulted. Across blocks, ordering is block index then transaction index.</p>
+      <p>The one exception is namespace resolution. The in-block namespace lookup matches on a field that a deploy row never carries, so <strong>a namespace deployed in block N cannot be resolved until block N is committed</strong>. A mint in the deploy's own block fails with <code>ND</code>.</p>
+
+      <h3>Confirmation</h3>
+      <p>An SRC-101 operation takes effect when the block containing it is processed by the indexer. There is no partial state, no pending state and no probabilistic state within the protocol itself. The Bitcoin Universe capability registry records <strong>no confirmation policy</strong> for SRC-101, so any depth requirement you see is an application decision rather than a documented one.</p>
+
+      <h3>Mempool</h3>
+      <p><strong>There is no mempool state.</strong> Parsing runs inside block processing. An unconfirmed transaction has no SRC-101 meaning: a name is not reserved by a broadcast, and two people can both broadcast a mint for the same free name. Whichever lands first in a confirmed block wins, and the other is silently dropped from its list, or fails with <code>DM</code> if it was the only name.</p>
+
+      <h3>The ledger hash</h3>
+      <p>The block ledger hash is computed from valid stamps and the SRC-20 operation string. <strong>SRC-101 contributes nothing.</strong> The indexer also cross-checks its SRC-20 ledger hash against an external reference and raises a critical alert on a mismatch. There is no equivalent check for SRC-101, so a divergence between two SRC-101 implementations can persist indefinitely without any signal.</p>
+    </section>
+
+    <section id="reorg" class="prose-wide">
+      <h2>5. Reorg and the owners rebuild</h2>
+      <p>Rollback is uniform across the indexer. A detected chain reorganisation triggers a rollback ten blocks deeper than the divergence, as a safety margin.</p>
+      <ol>
+        <li>Every row at or after the target block is deleted from <code>SRC101Valid</code>, <code>SRC101</code>, <code>src101price</code> and <code>recipients</code>, alongside the stamp, transaction and block tables.</li>
+        <li>Caches are cleared, after the deletion rather than before.</li>
+        <li>The owners table is rebuilt by replaying the surviving <code>SRC101Valid</code> rows in block and transaction order.</li>
+      </ol>
+      <p>The owners table is <strong>not</strong> purged by block index. It is replaced wholesale by the replay, which is what keeps it consistent. That rebuild also runs at indexer startup, and is skipped when the replay matches what is already stored.</p>
+
+      <div class="note note-warn">
+        <span class="note-title">The replay is a second implementation of the state machine</span>
+        <p>The live path and the rebuild path compute the register separately, and they do not agree in every detail. Verified differences in the rebuild:</p>
+        <ul>
+          <li>A mint records <strong>no previous owner</strong>. The live path records the holder whose term had expired.</li>
+          <li>A transfer <strong>does not clear the primary flag</strong>. The live path writes it false on a newly created row.</li>
+          <li>Setting a primary <strong>does not clear the flag from the holder's other names</strong>. The live path does.</li>
+          <li>Where a stored image URL is absent, the rebuild <strong>derives one</strong> from the namespace prefix and suffix rather than leaving it empty.</li>
+        </ul>
+        <p>The consequence is that the register after a rollback can differ from the register before it, in fields that are not the owner or the expiry. If your application reads the previous owner or the primary flag, treat those as advisory rather than authoritative.</p>
+      </div>
+    </section>
+
+    <section id="counterparty" class="prose-wide">
+      <h2>6. The Counterparty relationship</h2>
+      <p>SRC-101 inherits the Bitcoin Stamps classification path, which resolves a Counterparty asset identifier for a transaction where one exists. The gate is a plain disjunction: an SRC-101 payload with an asset identifier, or an SRC-101 payload without one. Both are accepted.</p>
+      <p>Two things follow that people get wrong in both directions:</p>
+      <ul>
+        <li><strong>SRC-101 never stops accepting Counterparty-carried operations.</strong> SRC-20 ignores them from block 796000, and there is no equivalent constant for SRC-101. Saying SRC-101 works the way SRC-20 does here is wrong.</li>
+        <li><strong>SRC-101 has no Counterparty history to replay.</strong> Nothing exists below block 870652, which is far above every Counterparty-era constant in the codebase. An indexer needs issuance data available for the classification gate, but needs no Counterparty state for SRC-101 correctness.</li>
+      </ul>
+      <p>The Counterparty branch for SRC-101 also carries none of the extra conditions the SRC-20 branch carries: no requirement that the asset identifier begins with <code>A</code>, and no requirement that supply is zero.</p>
+    </section>
+
+    <section id="family" class="prose-wide">
+      <h2>7. The Stamps protocol family</h2>
+      <div class="table-scroll">
+        <table>
+          <caption>The three sub-protocols the Stamps carrier recognises</caption>
+          <thead><tr><th scope="col">Protocol</th><th scope="col">What it carries</th><th scope="col">Genesis</th><th scope="col">State</th></tr></thead>
+          <tbody>
+            <tr><td>SRC-20</td><td>Fungible tokens</td><td>788041</td><td>Account ledger, balance per address</td></tr>
+            <tr><td>SRC-721</td><td>Composable stamp collections</td><td>792370</td><td>Stamp records, no separate ledger</td></tr>
+            <tr><td>SRC-101</td><td>Names</td><td><strong>870652</strong></td><td>One entry per name per namespace</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>All three share the same carrier, the same <code>stamp:</code> prefix and the same keyburn requirement, and all three are recognised from the same protocol field. None of them shares state with any other. A transaction is classified as exactly one.</p>
+      <p>The SRC-20 documentation is the sibling of this site and covers the shared carrier in the same detail: <a href="https://bitcoinuniverseio.github.io/src-20/specification.html">bitcoinuniverseio.github.io/src-20/specification.html</a>. The two sites deliberately describe the carrier twice so that each stands alone.</p>
+    </section>
+
+    <section id="size" class="prose-wide">
+      <h2>8. Size and fee considerations</h2>
+      <p>The protocol imposes two costs. The first is the Bitcoin fee for carrying the payload, which scales with payload size and carrier choice. The second is the namespace payment, which mint and renew require and which is fixed by the deploy's price list.</p>
+      <ul>
+        <li>A multisig data output carries <strong>62 bytes</strong>: a 1-of-3 bare multisig whose third key is a burn key, with the two data-bearing keys contributing 31 bytes each.</li>
+        <li>A P2WSH data output carries <strong>32 bytes</strong>, and only outputs after the first one count, since output 0 is the payment.</li>
+        <li>Both carriers add a two-byte length and a six-byte prefix to the JSON before chunking.</li>
+        <li>Payloads are not compressed. Field names are short for a reason.</li>
+      </ul>
+      <p>Deploy is by far the largest operation, because all sixteen fields are mandatory and several are long strings. Renew is the smallest. The <a href="guide.html#framing">guide</a> gives computed counts for each operation.</p>
+      <p>Below block 940000 the P2WSH branch reports a destination value of zero, so a paid operation carried over P2WSH will fail its payment check regardless of what was actually paid. Bare multisig is the only viable carrier for a mint or a renew below that height.</p>
+    </section>
+
+    <section id="limitations" class="prose-wide">
+      <h2>9. Limitations</h2>
+      <p>Stated plainly, because most of these have no workaround.</p>
+      <ol>
+        <li><strong>No trade path exists in any Bitcoin Universe product.</strong> The capability registry records no marketplace entry for SRC-101 at all. There is no escrow primitive in the protocol either: a name is a database row, not an output that can be locked, so a non-custodial swap cannot be constructed the way it can for a UTXO-native asset.</li>
+        <li><strong>No consensus check.</strong> SRC-101 contributes nothing to the ledger hash and has no external cross-check. Two implementations can diverge silently.</li>
+        <li><strong>No grace period on expiry.</strong> The moment the block timestamp reaches the expiry, renewal, transfer and record-setting all stop working, and the name is claimable by anyone.</li>
+        <li><strong>A mint cannot be made atomic across several names.</strong> Taken names are dropped and the rest proceed. There is no all-or-nothing mode and no refund.</li>
+        <li><strong>Exclusion is invisible.</strong> A payload rejected by key matching or field validation leaves no record. There is nothing to look up and nothing to explain the failure to a user, beyond a transaction that appears to have done nothing.</li>
+        <li><strong><code>lim</code> is dead weight.</strong> It enforces nothing and doubles as a presence sentinel, so a namespace deployed with a zero limit is silently unusable.</li>
+        <li><strong>The rebuild path diverges from the live path.</strong> Previous owner, primary flag and image URL can differ after a rollback, as section 5 details.</li>
+        <li><strong>Records other than <code>eth</code> are unproved.</strong> A <code>btc</code> record is a well-formed address, not a controlled one. A <code>txt</code> record is arbitrary text.</li>
+        <li><strong>Term arithmetic ignores calendars.</strong> A year is exactly 31536000 seconds. Expiries drift against civil dates by roughly a day every four years.</li>
+        <li><strong>No mempool semantics.</strong> Nothing is reserved before confirmation, so racing for a lapsing name is a genuine race.</li>
+        <li><strong>No subdomains, no delegation, no reverse resolution primitive.</strong> The primary flag is the closest thing to reverse resolution and it is scoped to one namespace.</li>
+        <li><strong>Namespaces are not discoverable in-protocol.</strong> There is no registry of namespaces. You must be given a deploy hash out of band, and nothing in the protocol distinguishes a legitimate namespace from a copy.</li>
+      </ol>
+    </section>
+
+    <section id="security" class="prose-wide">
+      <h2>10. Security considerations</h2>
+
+      <h3>For implementers</h3>
+      <ul>
+        <li><strong>Do not add a multisig fallback when P2WSH data fails.</strong> The exclusion is consensus-load-bearing and the source marks it as such. Adding a fallback forks the register.</li>
+        <li><strong>Reproduce the exclusion behaviour exactly.</strong> An implementation that is lenient about extra keys will accept operations the reference rejects and will diverge on the first non-conforming payload.</li>
+        <li><strong>Reproduce the numeric asymmetry.</strong> A JSON number with a fractional part truncates; the equivalent string is rejected. Normalising both to the same behaviour changes the register.</li>
+        <li><strong>Compare against decoded names, never against Base64.</strong> Two encodings of the same name must collide.</li>
+        <li><strong>Round the term before signing checks and before storing.</strong> The discount signature covers the rounded value.</li>
+        <li><strong>Do not implement the declared address regular expressions.</strong> They are unused, and the Bitcoin one would reject every Bech32 address.</li>
+      </ul>
+
+      <h3>For applications</h3>
+      <ul>
+        <li><strong>Show the namespace with every name.</strong> A name without its deploy hash is ambiguous by design.</li>
+        <li><strong>Show the expiry, and show it prominently near a purchase.</strong> A transfer conveys the remaining term and nothing more.</li>
+        <li><strong>Warn before a mint of several names.</strong> Explain that taken names are dropped and the payment is computed over the full list.</li>
+        <li><strong>Do not present a <code>btc</code> or <code>txt</code> record as verified.</strong> Only the <code>eth</code> record carries a signature the indexer checks.</li>
+        <li><strong>Detect homoglyphs before display.</strong> The character rules block whitespace and format characters, not lookalikes.</li>
+        <li><strong>Treat a single explorer as a single opinion.</strong> With no consensus check, agreement between implementations is not guaranteed.</li>
+      </ul>
+
+      <h3>For holders</h3>
+      <ul>
+        <li>Renew with margin. The comparison is against a block timestamp you do not control.</li>
+        <li>Verify the decoded name, not the Base64 you were given.</li>
+        <li>Verify the payment address against the namespace's recipient list before signing.</li>
+        <li>Re-establish your records after receiving a transferred name. They will be empty.</li>
+      </ul>
+    </section>
+
+    <section id="checklist" class="prose-wide">
+      <h2>11. Implementation checklist</h2>
+      <p>Work through this before claiming an SRC-101 indexer is correct. Each item has a corresponding vector on the <a href="vectors.html">test vectors</a> page.</p>
+
+      <h3>Carrier</h3>
+      <ol>
+        <li>Bare multisig: concatenate each collected key minus its first and last byte, ARC4-decrypt with the byte-reversed outpoint hash of input 0, check bytes 2 to 7 against <code>stamp:</code>, honour the two-byte length.</li>
+        <li>P2WSH: collect 32-byte witness programs from outputs after the first, join, strip trailing zeros, honour the length, check the prefix, force keyburn to 1.</li>
+        <li>P2WSH takes precedence with <strong>no</strong> multisig fallback.</li>
+        <li>Read the destination value from output 0 on the multisig branch always, and on the P2WSH branch only from block 940000.</li>
+      </ol>
+
+      <h3>Classification</h3>
+      <ol start="5">
+        <li>Lower-case every top-level key before anything else.</li>
+        <li>Require the protocol field to be <code>src-101</code>, case-insensitively.</li>
+        <li>Require <code>keyburn == 1</code>.</li>
+        <li>Reject everything below block 870652. Apply <strong>no</strong> upper bound.</li>
+        <li>Accept both the Counterparty and the non-Counterparty branch, with no extra conditions on either.</li>
+      </ol>
+
+      <h3>Key sets</h3>
+      <ol start="10">
+        <li>Exact symmetric-difference matching for <code>deploy</code>, <code>transfer</code>, <code>setrecord</code> and <code>renew</code>, at every height.</li>
+        <li>Exact matching for <code>mint</code> below block 872200, against the set that includes <code>img</code>.</li>
+        <li>Containment matching for <code>mint</code> at and above 872200, against the set without <code>img</code>, permitting extra keys.</li>
+        <li>Discard an unrecognised operation with no record.</li>
+      </ol>
+
+      <h3>Fields</h3>
+      <ol start="14">
+        <li>Normalise the empty string to null for every field, first.</li>
+        <li>Coerce the six numeric fields to integers of at least zero, preserving the string versus number asymmetry.</li>
+        <li>Accept <code>prim</code> only as the strings <code>"true"</code> and <code>"false"</code>.</li>
+        <li>Validate Base64 with the standard alphabet, a length that is a multiple of four, and a 128-character cap.</li>
+        <li>Reject decoded names containing space separators, format characters or the punctuation set.</li>
+        <li>Reject duplicate names within a list after decoding.</li>
+        <li>Abandon the whole operation on any field failure.</li>
+      </ol>
+
+      <h3>Operations</h3>
+      <ol start="21">
+        <li>Deploy: enforce the six length limits, substitute the maximum for a missing <code>mintend</code>, treat a zero <code>lim</code> as an unresolvable namespace.</li>
+        <li>Deploy: do not resolve a namespace from within its own block.</li>
+        <li>Mint: recipient membership, list-form token id, coefficient range, image handling by height, term rounding, price lookup with the zero-length fallback, signature verification against both message forms, payment comparison, mint window, per-name drop of live entries, expiry as block time plus term.</li>
+        <li>Transfer: owner check, expiry check, unchanged expiry, cleared records, cleared primary flag.</li>
+        <li>Renew: owner check, strict expiry check with no grace period, no discount, new expiry as old expiry plus term.</li>
+        <li>Setrecord: owner check, expiry check, the type-to-field mapping, the Ethereum signature recovery over the reversed previous transaction hash, the primary constraint, the primary clear across the namespace, and record merging rather than replacement.</li>
+      </ol>
+
+      <h3>State and recovery</h3>
+      <ol start="27">
+        <li>Write both the operation table and the valid table, and key state on validity rather than on the parse flag.</li>
+        <li>Keep expired entries rather than deleting them, and record the previous holder on a re-mint.</li>
+        <li>On rollback, purge by block index and rebuild the register by replaying the valid table.</li>
+        <li>Contribute nothing to the ledger hash, and do not expect an external cross-check to catch a divergence.</li>
+      </ol>
+    </section>
+  </div>
 </main>
-<footer><div class="wrap footer-inner"><span>SRC-101 on Bitcoin Stamps</span><span>Presented by <a href="https://github.com/bitcoinuniverse/src-101">Bitcoin Universe</a></span></div></footer></body></html>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2>This site</h2>
+        <ul>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="specification.html">Specification</a></li>
+          <li><a href="guide.html">Guide</a></li>
+          <li><a href="reference.html">Reference</a></li>
+          <li><a href="vectors.html">Test vectors</a></li>
+          <li><a href="validator.html">Payload validator</a></li>
+          <li><a href="changelog.html">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Related protocols</h2>
+        <p><img src="assets/stampchain-logo-480.svg" alt="" width="88" height="22" style="opacity:.75"></p>
+        <ul>
+          <li><a href="https://bitcoinuniverseio.github.io/src-20/">SRC-20, same carrier</a></li>
+          <li><a href="https://github.com/stampchain-io/btc_stamps">Bitcoin Stamps indexer</a></li>
+          <li><a href="https://stampchain.io/">Stampchain explorer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://docs.bitcoinuniverse.io">Documentation portal</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101">This repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101/security/advisories/new">Report a vulnerability</a></li>
+          <li><a href="llms.txt">llms.txt</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon">
+      <p>Document version 2026.09.01. Lifecycle experimental. Rules verified against <code>stampchain-io/btc_stamps</code> 1.9.3.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

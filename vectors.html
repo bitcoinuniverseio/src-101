@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SRC-101 test vectors</title>
+<meta name="description" content="Valid, invalid and excluded SRC-101 vectors with the rule that decides each outcome: carrier framing, key sets at both mint heights, field rules, per-operation vectors, and a stateful name lifecycle.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/src-101/vectors.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="search-index" href="search-index.json">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SRC-101 test vectors">
+<meta property="og:description" content="Vectors covering every SRC-101 outcome, each stating the rule that decides it.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/src-101/vectors.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/src-101/assets/og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<script>try{var t=localStorage.getItem('src101-docs-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 26 30" aria-hidden="true" focusable="false">
+        <rect x="1" y="1" width="24" height="28" rx="2" fill="var(--card)" stroke="var(--rule)" stroke-width="1.2"/>
+        <rect x="1" y="1" width="3.2" height="28" rx="1.4" fill="var(--accent)"/>
+        <rect x="7.5" y="6" width="13" height="3.4" rx="1" fill="var(--ink)"/>
+        <rect x="7.5" y="13" width="11" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="17.5" width="13" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="22" width="7.5" height="1.9" rx=".9" fill="var(--lapsed)"/>
+      </svg>
+      <span>SRC-101</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="specification.html">Specification</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="reference.html">Reference</a></li>
+        <li><a href="vectors.html" aria-current="page">Test vectors</a></li>
+        <li><a href="validator.html">Validator</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <form class="search" id="site-search" role="search" hidden>
+        <label class="visually-hidden" for="q">Search the SRC-101 documentation</label>
+        <input class="search-input" id="q" type="search" placeholder="Search (press /)" autocomplete="off">
+        <ul class="search-results" id="search-results" aria-live="polite"></ul>
+      </form>
+      <button class="theme-toggle" id="theme-toggle" type="button" hidden>Dark</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="hero">
+      <p class="eyebrow">Test vectors &middot; Bitcoin mainnet &middot; btc_stamps 1.9.3</p>
+      <h1>SRC-101 test vectors</h1>
+      <p class="lede">Every vector states the outcome the reference indexer produces and the rule that decides it. All are constructed for testing. None is drawn from a transaction on chain, and this site makes no claim about what any particular real transaction did.</p>
+    </div>
+
+    <div class="note">
+      <span class="note-title">The three outcomes</span>
+      <dl class="terms" style="margin-top:.4rem">
+        <dt><span class="badge badge-valid">Valid</span></dt>
+        <dd>Recorded, and the register changes.</dd>
+        <dt><span class="badge badge-invalid">Invalid</span></dt>
+        <dd>Recorded with a status code. Appears in activity, changes nothing.</dd>
+        <dt><span class="badge badge-neutral">Excluded</span></dt>
+        <dd>Never becomes an SRC-101 record. No status code, no row, nothing to look up. In SRC-101 this covers key-set failures <em>and</em> every field-level failure.</dd>
+      </dl>
+    </div>
+
+    <div class="toc">
+      <p>Contents</p>
+      <ol>
+        <li><a href="#fixtures">Shared fixtures</a></li>
+        <li><a href="#framing">Carrier framing</a></li>
+        <li><a href="#keysets">Key-set vectors</a></li>
+        <li><a href="#fields">Field-rule vectors</a></li>
+        <li><a href="#names">Name encoding vectors</a></li>
+        <li><a href="#deploy">deploy vectors</a></li>
+        <li><a href="#mint">mint vectors</a></li>
+        <li><a href="#owner">transfer, renew and setrecord vectors</a></li>
+        <li><a href="#lifecycle">A stateful name lifecycle</a></li>
+        <li><a href="#heights">Height-dependent behaviour</a></li>
+      </ol>
+    </div>
+
+    <hr class="perf">
+
+    <section id="fixtures" class="prose-wide">
+      <h2>1. Shared fixtures</h2>
+      <p>Every vector below uses these. Addresses and the public key are checksum-valid and lie on the curve, because a broken fixture teaches the wrong lesson, but each is derived from fixed text rather than from a key anyone holds.</p>
+      <div class="table-scroll">
+        <table>
+          <caption>Fixtures</caption>
+          <thead><tr><th scope="col">Name</th><th scope="col">Value</th></tr></thead>
+          <tbody>
+            <tr><td>Namespace hash</td><td><code>3a7f1c8e0b45d29a6f13e874c05b9d2e6a8f04713bc9e25d8a06f1c34b7e9c19</code></td></tr>
+            <tr><td>Recipient, in <code>rec</code></td><td><code>bc1qs2x9wz22tasf8pfejlcc3e8yhnzhv9qs2kgwls</code></td></tr>
+            <tr><td>A second address, not in <code>rec</code></td><td><code>bc1qxp2xhn5quxa589v89lm0dm694szv44canvyun6</code></td></tr>
+            <tr><td>Namespace owner field</td><td><code>14caKuhoxA2wCj7JYjVJhgsuxTsbu5rzch</code></td></tr>
+            <tr><td>Whitelist key <code>wla</code></td><td><code>02bb9e14cd42f6487e94071cb25fe5bd6f42753de771be11d21c6a80b5f08cf4a4</code></td></tr>
+            <tr><td>Price list <code>pri</code></td><td><code>{"0": 200000, "3": 2000000, "4": 800000}</code></td></tr>
+            <tr><td>Granularity <code>idua</code></td><td><code>1</code></td></tr>
+            <tr><td>Names</td><td><code>c2F0b3NoaQ==</code> is <code>satoshi</code>, <code>Yml0Y29pbg==</code> is <code>bitcoin</code>, <code>bGFwc2Vk</code> is <code>lapsed</code>, <code>YWJj</code> is <code>abc</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="framing" class="prose-wide">
+      <h2>2. Carrier framing</h2>
+      <p>The framed buffer is a two-byte big-endian length, then <code>stamp:</code>, then the JSON. The declared length covers the prefix and the JSON and excludes itself. Counts are computed from the exact payloads used on the <a href="guide.html">guide</a>.</p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Framing vectors</caption>
+          <thead><tr><th scope="col">Payload</th><th scope="col">JSON bytes</th><th scope="col">Length prefix</th><th scope="col">Framed total</th><th scope="col">Multisig data outputs</th><th scope="col">P2WSH data outputs</th></tr></thead>
+          <tbody>
+            <tr><td><code>DEPLOY</code></td><td>431</td><td><code>01b5</code> (437)</td><td>439</td><td>8</td><td>14</td></tr>
+            <tr><td><code>MINT</code>, no img</td><td>232</td><td><code>00ee</code> (238)</td><td>240</td><td>4</td><td>8</td></tr>
+            <tr><td><code>MINT</code>, with img</td><td>278</td><td><code>011c</code> (284)</td><td>286</td><td>5</td><td>9</td></tr>
+            <tr><td><code>TRANSFER</code></td><td>187</td><td><code>00c1</code> (193)</td><td>195</td><td>4</td><td>7</td></tr>
+            <tr><td><code>SETRECORD</code></td><td>222</td><td><code>00e4</code> (228)</td><td>230</td><td>4</td><td>8</td></tr>
+            <tr><td><code>RENEW</code></td><td>137</td><td><code>008f</code> (143)</td><td>145</td><td>3</td><td>5</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Carrier acceptance vectors</caption>
+          <thead><tr><th scope="col">Transaction shape</th><th scope="col">Outcome</th><th scope="col">Rule</th></tr></thead>
+          <tbody>
+            <tr><td>Bare multisig, 1-of-3 with a burn key, ARC4 payload decrypting to a framed <code>stamp:</code> buffer</td><td><span class="badge badge-valid">Accepted</span></td><td><a href="specification.html#r9">9</a>, <a href="specification.html#r16">16</a></td></tr>
+            <tr><td>Bare multisig with no burn key, so keyburn is not 1</td><td><span class="badge badge-neutral">Excluded</span></td><td><a href="specification.html#r16">16</a></td></tr>
+            <tr><td>P2WSH data outputs at index 1 and above, framed correctly</td><td><span class="badge badge-valid">Accepted</span>, keyburn forced to 1</td><td><a href="specification.html#r10">10</a></td></tr>
+            <tr><td>P2WSH data output at index 0 only</td><td><span class="badge badge-neutral">Excluded</span>, index 0 is never collected</td><td><a href="specification.html#r10">10</a></td></tr>
+            <tr><td>Both P2WSH and multisig present, P2WSH payload fails its length check</td><td><span class="badge badge-neutral">Excluded</span>. The multisig branch is deliberately not attempted</td><td><a href="specification.html#r12">12</a></td></tr>
+            <tr><td>Payload in an <code>OP_RETURN</code></td><td><span class="badge badge-neutral">Excluded</span>. Not a carrier</td><td><a href="specification.html#r8">8</a></td></tr>
+            <tr><td>Framed buffer whose declared length exceeds the data present</td><td><span class="badge badge-neutral">Excluded</span></td><td><a href="specification.html#r9">9</a>, <a href="specification.html#r10">10</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="keysets" class="prose-wide">
+      <h2>3. Key-set vectors</h2>
+      <p>Every vector here is either accepted for dispatch or excluded. None produces a status code.</p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Key matching at block 900000</caption>
+          <thead><tr><th scope="col">Vector</th><th scope="col">Outcome</th><th scope="col">Why</th></tr></thead>
+          <tbody>
+            <tr><td><code>transfer</code> with exactly its five keys</td><td><span class="badge badge-valid">Dispatched</span></td><td>Symmetric difference is empty</td></tr>
+            <tr><td><code>transfer</code> plus <code>"memo": "hello"</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Exact matching. One extra key is fatal</td></tr>
+            <tr><td><code>transfer</code> missing <code>toaddress</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Exact matching. One missing key is fatal</td></tr>
+            <tr><td><code>renew</code> plus <code>"coef": "500"</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Renew has no coefficient. There is no discount on renewal</td></tr>
+            <tr><td><code>deploy</code> plus <code>"hash"</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>A deploy must not name a namespace</td></tr>
+            <tr><td><code>deploy</code> missing <code>desc</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>All sixteen deploy keys are mandatory, including the unvalidated ones</td></tr>
+            <tr><td><code>setrecord</code> missing <code>prim</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Mandatory even when you do not want a primary. Use <code>"false"</code></td></tr>
+            <tr><td><code>mint</code> plus <code>"note": "x"</code></td><td><span class="badge badge-valid">Dispatched</span></td><td>At 872200 and above, mint matching is containment. Extras are ignored</td></tr>
+            <tr><td><code>mint</code> plus <code>"img": [...]</code></td><td><span class="badge badge-valid">Dispatched</span>, <code>img</code> discarded</td><td>Containment permits it, and the derived URL is written instead</td></tr>
+            <tr><td><code>mint</code> missing <code>sig</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Containment still requires every key in the set. Use <code>""</code></td></tr>
+            <tr><td><code>"op": "TRANSFEROWNERSHIP"</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Not one of the five. Key matching discards it before dispatch, so not even <code>UO</code></td></tr>
+            <tr><td><code>"op": "burn"</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>There is no burn operation</td></tr>
+            <tr><td><code>"P": "SRC-101"</code>, <code>"OP": "RENEW"</code>, upper-cased keys</td><td><span class="badge badge-valid">Dispatched</span></td><td>Top-level keys are lower-cased before matching</td></tr>
+            <tr><td><code>"p": "SRC-101"</code>, upper-cased value</td><td><span class="badge badge-valid">Dispatched</span></td><td>The protocol value is compared case-insensitively</td></tr>
+            <tr><td><code>"p": "src101"</code>, no hyphen</td><td><span class="badge badge-neutral">Excluded</span></td><td>The hyphen is part of the string</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>The same mint payload at two heights</caption>
+          <thead><tr><th scope="col">Payload</th><th scope="col">Block 871000</th><th scope="col">Block 900000</th></tr></thead>
+          <tbody>
+            <tr><td>Nine keys, no <code>img</code></td><td><span class="badge badge-neutral">Excluded</span>, <code>img</code> missing</td><td><span class="badge badge-valid">Dispatched</span></td></tr>
+            <tr><td>Ten keys including <code>img</code></td><td><span class="badge badge-valid">Dispatched</span>, <code>img</code> must match derived</td><td><span class="badge badge-valid">Dispatched</span>, <code>img</code> discarded</td></tr>
+            <tr><td>Ten keys including an unrelated extra</td><td><span class="badge badge-neutral">Excluded</span></td><td><span class="badge badge-valid">Dispatched</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="fields" class="prose-wide">
+      <h2>4. Field-rule vectors</h2>
+      <p>Every failure here is an <span class="badge badge-neutral">Excluded</span>, because field validation is fail-closed. There is no status code and no record.</p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Numeric fields</caption>
+          <thead><tr><th scope="col">Value of <code>dua</code></th><th scope="col">Outcome</th><th scope="col">Why</th></tr></thead>
+          <tbody>
+            <tr><td><code>"2"</code></td><td><span class="badge badge-valid">2</span></td><td>A plain integer string</td></tr>
+            <tr><td><code>2</code></td><td><span class="badge badge-valid">2</span></td><td>A JSON integer is equally accepted</td></tr>
+            <tr><td><code>"02"</code></td><td><span class="badge badge-valid">2</span></td><td>Leading zeros are accepted by the pattern and by conversion</td></tr>
+            <tr><td><code>"1.5"</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Matches the pattern but will not convert to an integer</td></tr>
+            <tr><td><code>1.5</code></td><td><span class="badge badge-valid">1</span></td><td><strong>Silently truncated.</strong> The asymmetry with the string form is real</td></tr>
+            <tr><td><code>"1e3"</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Scientific notation fails the pattern</td></tr>
+            <tr><td><code>"-1"</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>The pattern has no sign, and the value must be at least zero</td></tr>
+            <tr><td><code>"1,000"</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Separators fail the pattern. SRC-20's historical loose parsing has no equivalent here</td></tr>
+            <tr><td><code>""</code></td><td>Normalised to null, then <code>IND</code> or <code>ITD</code> at the handler</td><td>The empty string is nulled before the numeric rule runs</td></tr>
+            <tr><td><code>"0"</code> on a mint</td><td><span class="badge badge-invalid">ITD</span></td><td>Passes the field rule, fails the handler which requires greater than zero</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Typed fields</caption>
+          <thead><tr><th scope="col">Vector</th><th scope="col">Outcome</th><th scope="col">Why</th></tr></thead>
+          <tbody>
+            <tr><td><code>"prim": "true"</code></td><td><span class="badge badge-valid">true</span></td><td>The only accepted true form</td></tr>
+            <tr><td><code>"prim": true</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>The comparison is textual. A JSON boolean fails</td></tr>
+            <tr><td><code>"prim": "True"</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>The comparison is case-sensitive</td></tr>
+            <tr><td><code>"hash"</code> of 63 hex characters</td><td><span class="badge badge-neutral">Excluded</span></td><td>Exactly 64 are required</td></tr>
+            <tr><td><code>"toaddress"</code> a valid Bech32 mainnet address</td><td><span class="badge badge-valid">Accepted</span></td><td>Bech32 goes through the bech32 branch</td></tr>
+            <tr><td><code>"toaddress"</code> a valid P2PKH address</td><td><span class="badge badge-valid">Accepted</span></td><td>Everything not starting <code>bc1</code> or <code>tb1</code> goes to Base58Check</td></tr>
+            <tr><td><code>"toaddress"</code> a Bech32 address with one character altered</td><td><span class="badge badge-neutral">Excluded</span></td><td>The checksum fails</td></tr>
+            <tr><td><code>"toaddress"</code> a <code>tb1</code> testnet address</td><td><span class="badge badge-valid">Accepted</span></td><td>The branch is chosen on the prefix, and <code>tb1</code> takes the bech32 branch. A quirk, not a feature</td></tr>
+            <tr><td><code>"rec": []</code></td><td><span class="badge badge-valid">Accepted</span> at the field rule</td><td>An empty list passes, and makes every later mint fail with <code>IR</code></td></tr>
+            <tr><td><code>"rec"</code> containing the same address twice</td><td><span class="badge badge-valid">Accepted</span>, de-duplicated</td><td>Stored as a set. Order is not preserved</td></tr>
+            <tr><td><code>"wla"</code> of 66 hex characters beginning <code>04</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Only compressed keys, beginning <code>02</code> or <code>03</code></td></tr>
+            <tr><td><code>"pri": {"0": "200000"}</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Prices must be JSON integers, not strings</td></tr>
+            <tr><td><code>"pri": {"three": 200000}</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Every key must parse as an integer</td></tr>
+            <tr><td><code>"img": "https://x/y.png"</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>Must be a list of strings, even for one name</td></tr>
+            <tr><td><code>"sig": ""</code></td><td><span class="badge badge-valid">Accepted</span>, nulled</td><td>The conventional way to satisfy a mandatory key with no value</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="names" class="prose-wide">
+      <h2>5. Name encoding vectors</h2>
+      <div class="table-scroll">
+        <table>
+          <caption>tokenid acceptance</caption>
+          <thead><tr><th scope="col"><code>tokenid</code></th><th scope="col">Decodes to</th><th scope="col">Outcome</th><th scope="col">Why</th></tr></thead>
+          <tbody>
+            <tr><td><code>c2F0b3NoaQ==</code></td><td><code>satoshi</code></td><td><span class="badge badge-valid">Valid</span></td><td>Standard alphabet, length 12, a multiple of four</td></tr>
+            <tr><td><code>YWJj</code></td><td><code>abc</code></td><td><span class="badge badge-valid">Valid</span></td><td>No padding needed</td></tr>
+            <tr><td><code>U0FUT1NISQ==</code></td><td><code>satoshi</code></td><td><span class="badge badge-valid">Valid</span>, same name</td><td>The decoded value is lower-cased, so this collides with the first row</td></tr>
+            <tr><td><code>c2F0b3-oaQ==</code></td><td>n/a</td><td><span class="badge badge-neutral">Excluded</span></td><td>The URL-safe alphabet is rejected by the acceptance pattern</td></tr>
+            <tr><td><code>c2F0b3NoaQ</code></td><td>n/a</td><td><span class="badge badge-neutral">Excluded</span></td><td>Length 10 is not a multiple of four. Padding is required</td></tr>
+            <tr><td>132 characters of valid Base64</td><td>n/a</td><td><span class="badge badge-neutral">Excluded</span></td><td>Over the 128 character cap on the encoded form</td></tr>
+            <tr><td><code>dHdvIHdvcmRz</code></td><td><code>two words</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>A space is a special character</td></tr>
+            <tr><td><code>YS1i</code></td><td><code>a-b</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>The hyphen is in the special punctuation set</td></tr>
+            <tr><td><code>YS5i</code></td><td><code>a.b</code></td><td><span class="badge badge-neutral">Excluded</span></td><td>The dot is in the special punctuation set. Names are not dotted</td></tr>
+            <tr><td><code>4pyT</code></td><td>a check mark</td><td><span class="badge badge-valid">Valid</span></td><td>Ordinary symbols outside the special set are accepted. SRC-20's emoji allowlist has no equivalent here</td></tr>
+            <tr><td><code>["c2F0b3NoaQ==", "U0FUT1NISQ=="]</code></td><td><code>satoshi</code> twice</td><td><span class="badge badge-neutral">Excluded</span></td><td>Duplicates are compared after decoding, not as Base64</td></tr>
+            <tr><td><code>["c2F0b3NoaQ=="]</code> on a transfer</td><td><code>satoshi</code></td><td><span class="badge badge-invalid">NM</span></td><td>A transfer looks up a scalar name. A list cannot match an entry</td></tr>
+            <tr><td><code>"c2F0b3NoaQ=="</code> on a mint</td><td><code>satoshi</code></td><td><span class="badge badge-invalid">ITT</span></td><td>A mint requires the list form, even for one name</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="deploy" class="prose-wide">
+      <h2>6. <code>deploy</code> vectors</h2>
+      <div class="table-scroll">
+        <table>
+          <caption>Deploy outcomes</caption>
+          <thead><tr><th scope="col">Vector</th><th scope="col">Outcome</th><th scope="col">Why</th></tr></thead>
+          <tbody>
+            <tr><td>All sixteen keys, all lengths within limits</td><td><span class="badge badge-valid">Valid</span></td><td>The namespace exists from the next block onward</td></tr>
+            <tr><td><code>"tick"</code> of 32 characters</td><td><span class="badge badge-invalid">IDP</span></td><td>The limit is <em>shorter than</em> 32, so 32 fails</td></tr>
+            <tr><td><code>"tick"</code> of 31 characters</td><td><span class="badge badge-valid">Valid</span></td><td>31 is within the limit</td></tr>
+            <tr><td><code>"imglp"</code> of 255 characters</td><td><span class="badge badge-invalid">IDP</span></td><td>Shorter than 255 is required</td></tr>
+            <tr><td><code>"pri"</code> with 255 entries</td><td><span class="badge badge-invalid">IDP</span></td><td>Fewer than 255 entries is required</td></tr>
+            <tr><td><code>"lim": "0"</code></td><td><span class="badge badge-valid">Valid</span>, and permanently unusable</td><td>The namespace lookup treats a zero limit as not found, so every later operation gets <code>ND</code></td></tr>
+            <tr><td><code>"idua": "0"</code></td><td><span class="badge badge-valid">Valid</span>, and unmintable</td><td>Term rounding divides by the granularity, so every mint and renew gets <code>ITID</code></td></tr>
+            <tr><td><code>"mintend": "0"</code></td><td><span class="badge badge-valid">Valid</span></td><td>Stored as 18446744073709551615, meaning no end</td></tr>
+            <tr><td><code>"mintend"</code> at or before <code>"mintstart"</code></td><td><span class="badge badge-valid">Valid</span>, and unmintable</td><td>No block timestamp can be both at least the start and below the end</td></tr>
+            <tr><td><code>"pri"</code> with no <code>0</code> entry, minting a name of an unlisted length</td><td><span class="badge badge-invalid">IRL</span></td><td>No price and no fallback</td></tr>
+            <tr><td>A mint in the same block as this deploy</td><td><span class="badge badge-invalid">ND</span></td><td>A namespace cannot be resolved from within its own block</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="mint" class="prose-wide">
+      <h2>7. <code>mint</code> vectors</h2>
+      <p>Against the fixture namespace: prices 200000 for the fallback, 2000000 for length 3, 800000 for length 4, granularity 1.</p>
+      <div class="table-scroll">
+        <table>
+          <caption>Mint outcomes at block 900000</caption>
+          <thead><tr><th scope="col">Vector</th><th scope="col">Output 0</th><th scope="col">Outcome</th><th scope="col">Why</th></tr></thead>
+          <tbody>
+            <tr><td><code>satoshi</code>, <code>dua</code> 2, <code>coef</code> 1000</td><td>400000 to the recipient</td><td><span class="badge badge-valid">Valid</span></td><td>200000 fallback times 2 rounds</td></tr>
+            <tr><td><code>satoshi</code>, <code>dua</code> 2, <code>coef</code> 1000</td><td>399999 to the recipient</td><td><span class="badge badge-invalid">IRV</span></td><td>One satoshi short</td></tr>
+            <tr><td><code>satoshi</code>, <code>dua</code> 2, <code>coef</code> 1000</td><td>400000 to a different address</td><td><span class="badge badge-invalid">IR</span></td><td>Output 0 must pay a namespace recipient</td></tr>
+            <tr><td><code>abc</code>, <code>dua</code> 1</td><td>2000000</td><td><span class="badge badge-valid">Valid</span></td><td>Length 3 has an explicit price</td></tr>
+            <tr><td><code>abc</code>, <code>dua</code> 1</td><td>200000</td><td><span class="badge badge-invalid">IRV</span></td><td>Paying the fallback price for a length that has an explicit one</td></tr>
+            <tr><td><code>satoshi</code>, <code>dua</code> 2, <code>coef</code> 500, empty <code>sig</code></td><td>200000</td><td><span class="badge badge-invalid">IRV</span></td><td>Without a signature the coefficient stays at 1000. No fallback to half price</td></tr>
+            <tr><td><code>satoshi</code>, <code>dua</code> 2, <code>coef</code> 500, a signature that does not verify</td><td>200000</td><td><span class="badge badge-invalid">IRS</span></td><td>A failed signature ends the mint. It does not fall back to full price</td></tr>
+            <tr><td><code>satoshi</code>, <code>dua</code> 2, <code>coef</code> 500, a valid signature</td><td>200000</td><td><span class="badge badge-valid">Valid</span></td><td>400000 times 500 over 1000</td></tr>
+            <tr><td><code>coef</code> 1001</td><td>any</td><td><span class="badge badge-invalid">ITC</span></td><td>The range is 0 to 1000 inclusive</td></tr>
+            <tr><td>Three free names, <code>dua</code> 1</td><td>600000</td><td><span class="badge badge-valid">Valid</span>, three entries</td><td>200000 fallback each</td></tr>
+            <tr><td>Three names, one already held with a live expiry, <code>dua</code> 1</td><td>600000</td><td><span class="badge badge-valid">Valid</span>, <strong>two entries</strong></td><td>The taken name is dropped. The payment was computed over all three</td></tr>
+            <tr><td>Three names, all held with live expiries</td><td>600000</td><td><span class="badge badge-invalid">DM</span></td><td>The list became empty</td></tr>
+            <tr><td>A name whose previous term has expired</td><td>the price</td><td><span class="badge badge-valid">Valid</span></td><td>The previous holder is recorded as <code>preowner</code> and the row is overwritten</td></tr>
+            <tr><td>Block timestamp before <code>mintstart</code></td><td>the price</td><td><span class="badge badge-invalid">UT</span></td><td>The window has not opened</td></tr>
+            <tr><td>Block timestamp equal to <code>mintend</code></td><td>the price</td><td><span class="badge badge-invalid">OT</span></td><td>The window is half-open. Equal to the end is closed</td></tr>
+            <tr><td><code>toaddress</code> different from the creator</td><td>the price</td><td><span class="badge badge-valid">Valid</span></td><td>You may mint a name to somebody else</td></tr>
+            <tr><td>Carried over P2WSH below block 940000</td><td>the price, actually paid</td><td><span class="badge badge-invalid">IRV</span></td><td>The decoder reports the destination value as zero on that branch below that height</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Term rounding, with granularity 2</caption>
+          <thead><tr><th scope="col">Requested <code>dua</code></th><th scope="col">Rounded</th><th scope="col">Rounds</th><th scope="col">Payment at 200000 per round</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>2</td><td>1</td><td>200000</td></tr>
+            <tr><td>2</td><td>2</td><td>1</td><td>200000</td></tr>
+            <tr><td>3</td><td>4</td><td>2</td><td>400000</td></tr>
+            <tr><td>4</td><td>4</td><td>2</td><td>400000</td></tr>
+            <tr><td>5</td><td>6</td><td>3</td><td>600000</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">The rounded value is what is stored as the term, what appears in the discount signature, and what multiplies the price. Requesting three years of a two-year granularity buys four.</p>
+    </section>
+
+    <section id="owner" class="prose-wide">
+      <h2>8. <code>transfer</code>, <code>renew</code> and <code>setrecord</code> vectors</h2>
+      <div class="table-scroll">
+        <table>
+          <caption>Owner-only operations</caption>
+          <thead><tr><th scope="col">Vector</th><th scope="col">Outcome</th><th scope="col">Why</th></tr></thead>
+          <tbody>
+            <tr><td>Transfer by the current owner, term running</td><td><span class="badge badge-valid">Valid</span></td><td>Expiry unchanged, records cleared, primary flag cleared</td></tr>
+            <tr><td>Transfer by anyone else</td><td><span class="badge badge-invalid">NO</span></td><td>The creator must be the current owner</td></tr>
+            <tr><td>Transfer of a name never minted</td><td><span class="badge badge-invalid">NM</span></td><td>No entry to move</td></tr>
+            <tr><td>Transfer one second after the expiry</td><td><span class="badge badge-invalid">OE</span></td><td>No grace period</td></tr>
+            <tr><td>Transfer with no payment at output 0</td><td><span class="badge badge-valid">Valid</span></td><td>A transfer costs nothing beyond the Bitcoin fee</td></tr>
+            <tr><td>Renew by the owner one block before expiry, <code>dua</code> 1</td><td><span class="badge badge-valid">Valid</span></td><td>New expiry is the old expiry plus one year, so nothing is lost</td></tr>
+            <tr><td>Renew by the owner one block after expiry</td><td><span class="badge badge-invalid">OE</span></td><td>The term ended. The name is now open to anyone</td></tr>
+            <tr><td>Renew paying one satoshi short</td><td><span class="badge badge-invalid">IRV</span></td><td>The renew payment has no coefficient and no discount</td></tr>
+            <tr><td>Renew with <code>dua</code> 0</td><td><span class="badge badge-invalid">ITD</span></td><td>Must be greater than zero</td></tr>
+            <tr><td>Setrecord with <code>"type": "address"</code> and a valid <code>btc</code> member</td><td><span class="badge badge-valid">Valid</span></td><td>The resolved Bitcoin address is written</td></tr>
+            <tr><td>Setrecord with <code>"type": "txt"</code> and any value</td><td><span class="badge badge-valid">Valid</span></td><td>The text record is written</td></tr>
+            <tr><td>Setrecord with <code>"type": "url"</code></td><td><span class="badge badge-invalid">ID</span></td><td>Produces a field no handler reads, so neither record is set</td></tr>
+            <tr><td>Setrecord with <code>"data": {}</code> and type <code>address</code></td><td><span class="badge badge-invalid">ID</span></td><td>An address record must carry <code>btc</code>, <code>eth</code>, or both</td></tr>
+            <tr><td>Setrecord with an <code>eth</code> signature that recovers a valid address</td><td><span class="badge badge-valid">Valid</span></td><td>The recovered address is stored without its <code>0x</code> prefix</td></tr>
+            <tr><td>Setrecord with an <code>eth</code> member that is an Ethereum address rather than a signature</td><td><span class="badge badge-invalid">ID</span></td><td>Recovery fails. The member is a signature, not an address</td></tr>
+            <tr><td>Setrecord with <code>"prim": "true"</code> and <code>btc</code> equal to the creator</td><td><span class="badge badge-valid">Valid</span></td><td>Also clears the flag from the holder's other names in this namespace</td></tr>
+            <tr><td>Setrecord with <code>"prim": "true"</code> and <code>btc</code> not equal to the creator</td><td><span class="badge badge-invalid">IDB</span></td><td>You cannot mark primary for an address you are not spending from</td></tr>
+            <tr><td>Setrecord with <code>"prim": "true"</code> and a <code>txt</code> record only</td><td><span class="badge badge-invalid">IDB</span></td><td>The primary claim needs an address record to check against</td></tr>
+            <tr><td>Setrecord writing only <code>txt</code> over an existing address record</td><td><span class="badge badge-valid">Valid</span></td><td>Records merge. The address record survives</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="lifecycle" class="prose-wide">
+      <h2>9. A stateful name lifecycle</h2>
+      <p>One name, <code>satoshi</code>, in the fixture namespace, from first claim to lapse and re-claim. Each step assumes the previous ones applied. Timestamps are the block timestamps of the containing blocks.</p>
+
+      <div class="register">
+        <div class="register-head"><span>Namespace 3a7f...c19b</span><span>Name satoshi</span></div>
+
+        <div class="entry entry-active">
+          <div class="entry-top"><p class="entry-name">Step 1. MINT by A, dua 1, paying 200000</p><span class="entry-state">Valid</span></div>
+          <dl class="entry-fields">
+            <div><dt>owner</dt><dd>A</dd></div>
+            <div><dt>preowner</dt><dd>none</dd></div>
+            <div><dt>expiry</dt><dd>T plus 31536000</dd></div>
+            <div><dt>records</dt><dd>none, address_btc set to A</dd></div>
+          </dl>
+        </div>
+
+        <div class="entry entry-active">
+          <div class="entry-top"><p class="entry-name">Step 2. MINT by B, one block later</p><span class="entry-state">Invalid, DM</span></div>
+          <dl class="entry-fields">
+            <div><dt>reason</dt><dd>the only name in the list is held with a live expiry</dd></div>
+            <div><dt>register</dt><dd>unchanged</dd></div>
+            <div><dt>payment</dt><dd>spent, not refunded</dd></div>
+            <div><dt>owner</dt><dd>still A</dd></div>
+          </dl>
+        </div>
+
+        <div class="entry entry-active">
+          <div class="entry-top"><p class="entry-name">Step 3. SETRECORD by A, address btc equal to A, prim true</p><span class="entry-state">Valid</span></div>
+          <dl class="entry-fields">
+            <div><dt>address_btc</dt><dd>A</dd></div>
+            <div><dt>primary</dt><dd>yes, cleared from A's other names here</dd></div>
+            <div><dt>expiry</dt><dd>unchanged</dd></div>
+            <div><dt>owner</dt><dd>A</dd></div>
+          </dl>
+        </div>
+
+        <div class="entry entry-active">
+          <div class="entry-top"><p class="entry-name">Step 4. RENEW by A, dua 1, paying 200000</p><span class="entry-state">Valid</span></div>
+          <dl class="entry-fields">
+            <div><dt>expiry</dt><dd>T plus 63072000, the old expiry plus a year</dd></div>
+            <div><dt>owner</dt><dd>A</dd></div>
+            <div><dt>records</dt><dd>carried over</dd></div>
+            <div><dt>primary</dt><dd>carried over</dd></div>
+          </dl>
+        </div>
+
+        <div class="entry entry-active">
+          <div class="entry-top"><p class="entry-name">Step 5. TRANSFER by A to B</p><span class="entry-state">Valid</span></div>
+          <dl class="entry-fields">
+            <div><dt>owner</dt><dd>B</dd></div>
+            <div><dt>preowner</dt><dd>A</dd></div>
+            <div><dt>expiry</dt><dd>unchanged, T plus 63072000</dd></div>
+            <div><dt>records</dt><dd><strong>cleared</strong>, primary set to false</dd></div>
+          </dl>
+        </div>
+
+        <div class="entry entry-active">
+          <div class="entry-top"><p class="entry-name">Step 6. SETRECORD by A after the transfer</p><span class="entry-state">Invalid, NO</span></div>
+          <dl class="entry-fields">
+            <div><dt>reason</dt><dd>A is no longer the owner</dd></div>
+            <div><dt>owner</dt><dd>B</dd></div>
+            <div><dt>register</dt><dd>unchanged</dd></div>
+            <div><dt>note</dt><dd>the same code applies to transfer and renew</dd></div>
+          </dl>
+        </div>
+
+        <div class="entry entry-lapsed">
+          <div class="entry-top"><p class="entry-name">Step 7. The expiry passes with no renew</p><span class="entry-state">Expired</span></div>
+          <dl class="entry-fields">
+            <div><dt>row</dt><dd>still present, owner still B</dd></div>
+            <div><dt>renew by B</dt><dd>refused, OE</dd></div>
+            <div><dt>transfer by B</dt><dd>refused, OE</dd></div>
+            <div><dt>setrecord by B</dt><dd>refused, OE</dd></div>
+          </dl>
+        </div>
+
+        <div class="entry entry-active">
+          <div class="entry-top"><p class="entry-name">Step 8. MINT by C, dua 1, paying 200000</p><span class="entry-state">Valid</span></div>
+          <dl class="entry-fields">
+            <div><dt>owner</dt><dd>C</dd></div>
+            <div><dt>preowner</dt><dd>B</dd></div>
+            <div><dt>expiry</dt><dd>the new block time plus 31536000</dd></div>
+            <div><dt>records</dt><dd>none, the row is overwritten</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="note note-warn">
+        <span class="note-title">What a rollback would do to this history</span>
+        <p>If the chain reorganised back past step 5 and the register were rebuilt from the valid operations, the replay would reproduce owner and expiry correctly, but not every field. The rebuild sets no previous owner on a mint, does not clear the primary flag on a transfer, and does not clear the primary flag from other names when one is set. The <a href="reference.html#reorg">reference</a> gives the full list.</p>
+      </div>
+    </section>
+
+    <section id="heights" class="prose-wide">
+      <h2>10. Height-dependent behaviour</h2>
+      <div class="table-scroll">
+        <table>
+          <caption>The same input at different heights</caption>
+          <thead><tr><th scope="col">Input</th><th scope="col">869000</th><th scope="col">871000</th><th scope="col">900000</th><th scope="col">950000</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Any SRC-101 payload</td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td>Processed</td><td>Processed</td><td>Processed</td>
+            </tr>
+            <tr>
+              <td>Mint with nine keys, no <code>img</code></td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td>Processed</td><td>Processed</td>
+            </tr>
+            <tr>
+              <td>Mint with ten keys including <code>img</code></td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td>Processed, <code>img</code> must match derived, else <code>IRM</code></td>
+              <td>Processed, <code>img</code> discarded</td>
+              <td>Processed, <code>img</code> discarded</td>
+            </tr>
+            <tr>
+              <td>Mint with an unrelated extra key</td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td>Processed, extra ignored</td>
+              <td>Processed, extra ignored</td>
+            </tr>
+            <tr>
+              <td>Transfer with an unrelated extra key</td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+            </tr>
+            <tr>
+              <td>Correctly paid mint carried over P2WSH</td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td><span class="badge badge-invalid">IRV</span></td>
+              <td><span class="badge badge-invalid">IRV</span></td>
+              <td><span class="badge badge-valid">Valid</span></td>
+            </tr>
+            <tr>
+              <td>Correctly paid mint carried over bare multisig</td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td><span class="badge badge-valid">Valid</span></td>
+              <td><span class="badge badge-valid">Valid</span></td>
+              <td><span class="badge badge-valid">Valid</span></td>
+            </tr>
+            <tr>
+              <td>Transfer carried over P2WSH</td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td><span class="badge badge-valid">Valid</span></td>
+              <td><span class="badge badge-valid">Valid</span></td>
+              <td><span class="badge badge-valid">Valid</span></td>
+            </tr>
+            <tr>
+              <td>SRC-101 carried alongside a Counterparty asset</td>
+              <td><span class="badge badge-neutral">Excluded</span></td>
+              <td>Processed</td><td>Processed</td><td>Processed</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The last row is worth pausing on. The equivalent SRC-20 row would read "ignored" from block 796000 onward. SRC-101 has no such cut-off at any height, now or in future.</p>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2>This site</h2>
+        <ul>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="specification.html">Specification</a></li>
+          <li><a href="guide.html">Guide</a></li>
+          <li><a href="reference.html">Reference</a></li>
+          <li><a href="vectors.html">Test vectors</a></li>
+          <li><a href="validator.html">Payload validator</a></li>
+          <li><a href="changelog.html">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Related protocols</h2>
+        <p><img src="assets/stampchain-logo-480.svg" alt="" width="88" height="22" style="opacity:.75"></p>
+        <ul>
+          <li><a href="https://bitcoinuniverseio.github.io/src-20/">SRC-20, same carrier</a></li>
+          <li><a href="https://github.com/stampchain-io/btc_stamps">Bitcoin Stamps indexer</a></li>
+          <li><a href="https://stampchain.io/">Stampchain explorer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://docs.bitcoinuniverse.io">Documentation portal</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101">This repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101/security/advisories/new">Report a vulnerability</a></li>
+          <li><a href="llms.txt">llms.txt</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon">
+      <p>Document version 2026.09.01. Lifecycle experimental. Rules verified against <code>stampchain-io/btc_stamps</code> 1.9.3.</p>
+      <p>All vectors are constructed. None is drawn from a transaction on chain.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

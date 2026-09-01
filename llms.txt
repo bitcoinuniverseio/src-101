@@ -1,32 +1,59 @@
 # SRC-101
 
-> SRC-101 brings namespaces, unique names, renewals, transfers, and records into the Bitcoin Stamps ecosystem.
+> SRC-101 is a name registry protocol on Bitcoin mainnet. Its deploy, mint, transfer, setrecord and renew operations are UTF-8 JSON documents carried in transaction output scripts through the Bitcoin Stamps data carrier, the same carrier SRC-20 uses. A name is leased for a paid term rather than owned outright: every entry carries an expiry, and when the expiry passes the name returns to the pool. SRC-101 originated in the Bitcoin Stamps community; this site documents it and does not own it.
 
-## Public experience
+Site base: https://bitcoinuniverseio.github.io/src-101/
+Owning repository: https://github.com/bitcoinuniverseio/src-101
+Document version: 2026.09.01. Lifecycle: experimental. Chain: Bitcoin mainnet only.
+Grounded in the Bitcoin Stamps indexer (stampchain-io/btc_stamps) version 1.9.3, chiefly indexer/src/index_core/src101.py, and in the Bitcoin Universe ecosystem capability registry.
 
-- Home: https://bitcoinuniverse.github.io/src-101/
-- Discover: https://bitcoinuniverse.github.io/src-101/reference.html
-- Get started: https://bitcoinuniverse.github.io/src-101/guide.html
-- Bitcoin Universe: https://inscribe.bitcoinuniverse.io/
+## Pages
 
-## The experience
+- [Overview](https://bitcoinuniverseio.github.io/src-101/): what SRC-101 is in plain language, the register entry and its two states, the name lifecycle from deploy through mint, setrecord, transfer, renew and expiry, a table of what it shares with SRC-20 and where they diverge, five things implementers get wrong, and Bitcoin Universe product support.
+- [Specification](https://bitcoinuniverseio.github.io/src-101/specification.html): 83 numbered normative rules, each traceable to the enforcing code. Covers scope and terminology, the two data carriers, classification and the three activation heights, the five key sets and their matching modes, field rules, each of the five operations, validity and state, and the Counterparty relationship.
+- [Guide](https://bitcoinuniverseio.github.io/src-101/guide.html): worked payloads for all five operations, the term pricing arithmetic with computed amounts, the whitelist discount and its two signed message forms, computed byte framing and output counts, how to read a result, the verified Bitcoin Universe support matrix, and safety guidance.
+- [Reference](https://bitcoinuniverseio.github.io/src-101/reference.html): terminology, both families of status code, the five storage tables, indexer semantics for ordering, confirmation, mempool and the ledger hash, reorg behaviour and the owners rebuild, the Counterparty relationship, size and fee considerations, twelve limitations, security considerations, and a thirty-item implementation checklist.
+- [Test vectors](https://bitcoinuniverseio.github.io/src-101/vectors.html): carrier framing and acceptance vectors, key-set vectors at both mint heights, field-rule vectors, name encoding vectors, per-operation vectors, a stateful name lifecycle from claim through lapse to re-claim, and a table of the same input at four different heights.
+- [Payload validator](https://bitcoinuniverseio.github.io/src-101/validator.html): a client-side tool that identifies the operation, applies the exact key set for a chosen block height including the 872200 change, validates numerics and address formats with real Base58Check and Bech32 checks, and explains each result. No data leaves the browser.
+- [Changelog](https://bitcoinuniverseio.github.io/src-101/changelog.html): the protocol's four relevant block heights, the document's version history, and three widely repeated claims about SRC-101 that were checked against the source and corrected.
+- [404](https://bitcoinuniverseio.github.io/src-101/404.html): navigation help for a missing page.
 
-- Discover: Explore namespaces and the names that communities build around them.
-- Own: Mint an available name and follow its ownership and renewal timeline.
-- Connect: Associate supported records and carry the name into new experiences.
+## Machine-readable files
 
-## In plain language
+- [Search index](https://bitcoinuniverseio.github.io/src-101/search-index.json): page, heading, anchor, snippet and aliases for the site's client-side search.
+- [Documentation manifest](https://github.com/bitcoinuniverseio/src-101/blob/main/docs.manifest.json): the Bitcoin Universe docs portal manifest for this repository.
+- [Sitemap](https://bitcoinuniverseio.github.io/src-101/sitemap.xml)
 
-- Namespaces: A deployment establishes the space where SRC-101 names can live.
-- Names: Each name uses an encoded token identity tied to its namespace.
-- Lifecycle: Mint, transfer, renew, and record updates create the name’s timeline.
-- Records: Supported signed data can connect a name to useful destinations.
+## Key facts an answer should get right
 
-## User safety
+- Operations are deploy, mint, transfer, setrecord and renew. There is no burn, no revoke, no reclaim and no subdomain. The only batch form is a multi-name mint.
+- The protocol string is "src-101", compared case-insensitively. The hyphen is required.
+- SRC-101 is valid from block 870652 and has NO end block. Unlike SRC-20, which ignores Counterparty-carried operations from block 796000, Counterparty-carried SRC-101 is accepted at any height at or above genesis, with none of the extra conditions the SRC-20 Counterparty branch imposes.
+- SRC-101 uses the exact same carrier as SRC-20: the "stamp:" prefix, bare multisig with ARC4 or P2WSH, and keyburn == 1. P2WSH takes precedence over multisig with no fallback.
+- Key matching is EXACT symmetric difference for deploy, transfer, setrecord and renew, at every height. Every listed key must be present and no other key may be present. Extra fields are rejected, not ignored.
+- The mint key set changes at block 872200: img leaves the required set, and mint matching alone relaxes from exact to superset, so extra keys become permitted on mint.
+- The five key sets are: deploy (p, op, root, name, tick, lim, owner, rec, pri, desc, mintstart, mintend, wla, imglp, imgf, idua); mint below 872200 (p, op, hash, toaddress, tokenid, dua, prim, sig, img, coef); mint at and above 872200 (the same without img); transfer (p, op, hash, toaddress, tokenid); setrecord (p, op, hash, tokenid, type, data, prim); renew (p, op, hash, tokenid, dua).
+- Numeric fields lim, dua, idua, mintstart, mintend and coef coerce to int, not Decimal, and must be at least 0. There is no upper ceiling. A JSON number with a fraction is silently truncated; the same value written as a string is rejected outright.
+- Field validation is FAIL-CLOSED. A single bad field abandons the whole operation before dispatch, producing no usable record and no operation-level status. This is the sharpest divergence from SRC-20.
+- prim must be the STRING "true" or "false". A JSON boolean is rejected, and because field failure is fatal, the whole operation is then discarded.
+- Names are Base64 with the standard alphabet only, at most 128 characters encoded, and compared after decoding and lower-casing. A mint takes a list of names; transfer, renew and setrecord take a single string.
+- Block 940000 does NOT begin P2WSH carriage for SRC-101. P2WSH carriage works from block 865000, a shared gate that predates SRC-101 genesis. What 940000 changes is that the decoder begins reading output 0's value on the P2WSH branch, so below that height a P2WSH-carried mint or renew fails its payment check with IRV no matter what was paid.
+- SRC-101 declares its own ADDRESS_REGEX and ETH_ADDRESS_REGEX and REFERENCES NEITHER. Address validation is delegated to helpers that decode Base58 and Bech32, so Bech32 addresses are accepted even though the declared Bitcoin pattern would reject them.
+- The eth_account library is used to recover the signer of a setrecord Ethereum record, NOT to verify the mint sig field. The mint discount signature is an ECDSA over SHA-256 check against the namespace whitelist key wla, over one of two JSON message forms.
+- lim is never enforced as a limit. It is only a presence sentinel: a namespace whose lim is zero is treated as not deployed, so every later operation against it fails with ND.
+- A multi-name mint drops names that are already held with a live expiry and mints the rest. The payment is computed over the full submitted list. Only if every name is taken does it fail, with DM.
+- A transfer carries the expiry over unchanged and CLEARS the records and the primary flag. A renew adds the term to the existing expiry, not to the block time, and gets no discount.
+- Expiry is absolute. There is no grace period. Once the block timestamp reaches the expiry, renew, transfer and setrecord all fail with OE and the name is claimable by anyone.
+- A term is dua years of exactly 31536000 seconds, rounded up to a multiple of the namespace's idua before use.
+- A namespace cannot be resolved from within the block that deployed it, so a mint in the deploy's own block fails with ND.
+- SRC-101 shares NO state with the SRC-20 ledger and contributes NOTHING to the block ledger hash. There is no cross-implementation consensus check, so two indexers can diverge silently.
+- SRC-101 has no mempool semantics. An unconfirmed transaction has no SRC-101 meaning and reserves no name.
+- Bitcoin Universe support, from the ecosystem capability registry: Core has view, discover, view-collection, view-activity, view-transaction; Wallet has view, send, receive; Inscribe has mint and transfer only. There is NO marketplace entry for SRC-101 at all, so no Universe product implements a trade path. The registry also records no source of truth, no indexer, and no freshness, confirmation or reorg policy for this protocol.
 
-Names can be visually similar, renewal timing matters, and record updates affect where a name points. Verify the namespace, exact name, recipient, duration, and signed data before approval.
+## Related
 
-## Community resources
-
-- Explore Bitcoin Stamps: https://stampchain.io/
-- Visit the Stamps FAQ: https://stampchain.io/faq
+- Bitcoin Stamps indexer, the reference implementation for these rules: https://github.com/stampchain-io/btc_stamps
+- SRC-20, which shares this protocol's data carrier: https://bitcoinuniverseio.github.io/src-20/
+- Stampchain explorer and API: https://stampchain.io/
+- Bitcoin Universe documentation portal: https://docs.bitcoinuniverse.io
+- Report a vulnerability in this site privately: https://github.com/bitcoinuniverseio/src-101/security/advisories/new
