@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SRC-101 payload validator</title>
+<meta name="description" content="A client-side SRC-101 payload validator. Identifies the operation, applies the exact key-set rules for a chosen block height including the 872200 change, validates numerics and address formats, and explains every result.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/src-101/validator.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="search-index" href="search-index.json">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SRC-101 payload validator">
+<meta property="og:description" content="Check an SRC-101 JSON operation field by field against the rules the Bitcoin Stamps indexer enforces. Nothing leaves your browser.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/src-101/validator.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/src-101/assets/og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<script>try{var t=localStorage.getItem('src101-docs-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 26 30" aria-hidden="true" focusable="false">
+        <rect x="1" y="1" width="24" height="28" rx="2" fill="var(--card)" stroke="var(--rule)" stroke-width="1.2"/>
+        <rect x="1" y="1" width="3.2" height="28" rx="1.4" fill="var(--accent)"/>
+        <rect x="7.5" y="6" width="13" height="3.4" rx="1" fill="var(--ink)"/>
+        <rect x="7.5" y="13" width="11" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="17.5" width="13" height="1.9" rx=".9" fill="var(--lapsed)"/>
+        <rect x="7.5" y="22" width="7.5" height="1.9" rx=".9" fill="var(--lapsed)"/>
+      </svg>
+      <span>SRC-101</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="specification.html">Specification</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="reference.html">Reference</a></li>
+        <li><a href="vectors.html">Test vectors</a></li>
+        <li><a href="validator.html" aria-current="page">Validator</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <form class="search" id="site-search" role="search" hidden>
+        <label class="visually-hidden" for="q">Search the SRC-101 documentation</label>
+        <input class="search-input" id="q" type="search" placeholder="Search (press /)" autocomplete="off">
+        <ul class="search-results" id="search-results" aria-live="polite"></ul>
+      </form>
+      <button class="theme-toggle" id="theme-toggle" type="button" hidden>Dark</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="hero">
+      <p class="eyebrow">Interactive tool &middot; Bitcoin mainnet &middot; Rules as of indexer 1.9.3</p>
+      <h1>SRC-101 payload validator</h1>
+      <p class="lede">Paste an SRC-101 JSON operation and choose a block height. The tool works out which operation it is, applies the exact key set for that operation at that height, checks every field rule, and explains each result. It distinguishes a payload that is <strong>excluded</strong>, leaving no trace at all, from one that is <strong>recorded as invalid</strong> with a status code.</p>
+    </div>
+
+    <div class="note">
+      <span class="note-title">Nothing leaves your browser</span>
+      <p>This tool is a single static JavaScript file with no dependencies. There is no request, no logging, no storage and no analytics of any kind. You can read <a href="assets/validator.js"><code>assets/validator.js</code></a> and confirm it. The Base58Check and Bech32 checks, including a SHA-256 implementation, run locally.</p>
+    </div>
+
+    <noscript>
+      <div class="note note-warn">
+        <span class="note-title">JavaScript required for this tool only</span>
+        <p>The validator needs JavaScript. Every other page on this site, including the full <a href="specification.html">specification</a> and the <a href="vectors.html">test vectors</a>, works without it.</p>
+      </div>
+    </noscript>
+
+    <div id="tool-noscript" class="note note-warn">
+      <span class="note-title">JavaScript required for this tool only</span>
+      <p>The validator needs JavaScript. Every other page on this site works without it.</p>
+    </div>
+
+    <section class="tool" id="tool-panel" hidden>
+      <div class="tool-grid">
+        <div>
+          <label for="payload">SRC-101 JSON operation</label>
+          <textarea id="payload" spellcheck="false" autocapitalize="off" autocorrect="off" aria-describedby="payload-help">{
+  "p": "src-101",
+  "op": "MINT",
+  "hash": "3a7f1c8e0b45d29a6f13e874c05b9d2e6a8f04713bc9e25d8a06f1c34b7e9c19",
+  "toaddress": "bc1qs2x9wz22tasf8pfejlcc3e8yhnzhv9qs2kgwls",
+  "tokenid": ["c2F0b3NoaQ=="],
+  "dua": "2",
+  "prim": "true",
+  "sig": "",
+  "coef": "1000"
+}</textarea>
+          <p id="payload-help" class="small muted">Paste the JSON payload only, not the raw transaction hex.</p>
+
+          <div class="field-row">
+            <div>
+              <label for="height">Block height</label>
+              <input type="number" id="height" value="900000" min="0" step="1" aria-describedby="height-help">
+              <p id="height-help" class="small muted">Genesis is 870652. The mint key set changes at 872200. P2WSH payment visibility begins at 940000.</p>
+            </div>
+          </div>
+
+          <h2 class="visually-hidden">Examples</h2>
+          <p class="small muted" style="margin-bottom:.3rem">Load an example:</p>
+          <ul class="sample-row">
+            <li><button class="chip" type="button" data-sample="deploy">Valid DEPLOY</button></li>
+            <li><button class="chip" type="button" data-sample="mint">Valid MINT</button></li>
+            <li><button class="chip" type="button" data-sample="multi">Multi-name MINT</button></li>
+            <li><button class="chip" type="button" data-sample="transfer">Valid TRANSFER</button></li>
+            <li><button class="chip" type="button" data-sample="renew">Valid RENEW</button></li>
+            <li><button class="chip" type="button" data-sample="setrecord">Valid SETRECORD</button></li>
+          </ul>
+          <p class="small muted" style="margin-bottom:.3rem">Load a failure:</p>
+          <ul class="sample-row">
+            <li><button class="chip" type="button" data-sample="boolprim">prim as a boolean</button></li>
+            <li><button class="chip" type="button" data-sample="extra">One extra key</button></li>
+            <li><button class="chip" type="button" data-sample="missing">One missing key</button></li>
+            <li><button class="chip" type="button" data-sample="fractional">Fractional dua</button></li>
+            <li><button class="chip" type="button" data-sample="stringid">MINT with a string tokenid</button></li>
+            <li><button class="chip" type="button" data-sample="urlsafe">URL-safe base64</button></li>
+            <li><button class="chip" type="button" data-sample="zerolim">DEPLOY with lim zero</button></li>
+            <li><button class="chip" type="button" data-sample="mint" data-height="871000">MINT at block 871000</button></li>
+            <li><button class="chip" type="button" data-sample="src20">SRC-20 by mistake</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="visually-hidden">Result</h2>
+          <div class="verdict" id="verdict" role="status" aria-live="polite"></div>
+          <ul class="checks" id="checks"></ul>
+
+          <div id="notes-wrap" hidden>
+            <h3>What this tool cannot know</h3>
+            <p class="small muted">A payload can be perfectly well formed and still fail on chain. These checks need the register or the transaction:</p>
+            <ul class="small" id="notes"></ul>
+          </div>
+
+          <p class="tool-meta">Protocol SRC-101 &middot; Bitcoin mainnet &middot; Field rules from <code>btc_stamps</code> 1.9.3 &middot; Address checks apply standard Base58Check and Bech32 validation, which agrees with the indexer's library for every well-formed mainnet address.</p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="perf">
+
+    <section class="prose-wide">
+      <h2 id="reading">Reading the verdict</h2>
+      <dl class="terms">
+        <dt><span class="badge badge-valid">Well formed</span></dt>
+        <dd>Every check that can be made from the payload alone passes. The operation still depends on chain state: the namespace, the price, the payment, the ownership and the expiry.</dd>
+        <dt><span class="badge badge-invalid">Recorded as invalid</span></dt>
+        <dd>The payload reaches its handler and a handler check fails on the payload alone. A row is written with a status code, and the register does not change.</dd>
+        <dt><span class="badge badge-neutral">Excluded</span></dt>
+        <dd>The payload never became an SRC-101 operation. No row, no status code, nothing to look up. In SRC-101 this covers key-set failures <em>and</em> every field-level failure, which is more than most people expect.</dd>
+      </dl>
+
+      <h2 id="height">Why the block height matters</h2>
+      <p>Three heights change what this tool does. Move the height field and watch the same payload change verdict.</p>
+      <div class="table-scroll">
+        <table>
+          <caption>What each height changes</caption>
+          <thead><tr><th scope="col">Height</th><th scope="col">Effect on validation</th></tr></thead>
+          <tbody>
+            <tr><td>Below 870652</td><td>Nothing is an SRC-101 operation. Every payload is excluded</td></tr>
+            <tr><td>870652 to 872199</td><td><code>mint</code> requires <code>img</code>, and <code>mint</code> matching is exact. An <code>img</code> entry must equal the derived URL</td></tr>
+            <tr><td>872200 and above</td><td><code>mint</code> drops <code>img</code> from the required set and switches to containment matching. Extra keys are allowed on <code>mint</code> alone</td></tr>
+            <tr><td>Below 940000</td><td>A P2WSH-carried <code>mint</code> or <code>renew</code> is seen as paying zero and fails with <code>IRV</code>. Bare multisig is the only viable carrier for a paid operation</td></tr>
+            <tr><td>No upper bound</td><td>SRC-101 has no end block. The Counterparty-carried branch never closes</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="src20">If you are coming from SRC-20</h2>
+      <p>The field names are different and so is the temperament. The differences that cost people the most:</p>
+      <div class="table-scroll">
+        <table>
+          <caption>SRC-20 habits that break on SRC-101</caption>
+          <thead><tr><th scope="col">Habit from SRC-20</th><th scope="col">What SRC-101 does</th></tr></thead>
+          <tbody>
+            <tr><td>Add an extra field and expect it to be ignored</td><td>Discards the payload entirely for four of the five operations</td></tr>
+            <tr><td>Expect a bad field to produce an invalid record you can look up</td><td>Abandons the operation with no usable record at all</td></tr>
+            <tr><td>Write a boolean as a JSON boolean</td><td>Rejects it. <code>prim</code> must be the string <code>"true"</code> or <code>"false"</code></td></tr>
+            <tr><td>Expect an over-large amount to be clamped and still succeed</td><td>Has no clamping. An underpayment simply fails with <code>IRV</code></td></tr>
+            <tr><td>Expect operations to be free of protocol fees</td><td>Requires a payment at output 0 for <code>mint</code> and <code>renew</code></td></tr>
+            <tr><td>Rely on the ledger hash catching a divergence</td><td>Contributes nothing to it. There is no cross-check</td></tr>
+            <tr><td>Assume Counterparty carriage stopped at 796000</td><td>Never stops for SRC-101</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The two protocols do share the whole carrier layer. The <a href="https://bitcoinuniverseio.github.io/src-20/">SRC-20 documentation</a> is the sibling of this site.</p>
+
+      <h2 id="scope">What this tool does not do</h2>
+      <ul>
+        <li>It does not decode a transaction. Paste the JSON payload, not the raw hex.</li>
+        <li>It does not check the carrier: keyburn, framing, output geometry and the ARC4 or P2WSH decoding are all outside its scope.</li>
+        <li>It does not resolve a namespace, so it cannot know the price list, the recipient set, the whitelist key, the mint window or the term granularity.</li>
+        <li>It does not verify a discount signature or an Ethereum record signature. Both need data the payload does not carry.</li>
+        <li>It does not verify that a <code>wla</code> public key is a valid point on secp256k1, only that it is well formed.</li>
+        <li>It does not know who owns a name or when a term ends.</li>
+      </ul>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2>This site</h2>
+        <ul>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="specification.html">Specification</a></li>
+          <li><a href="guide.html">Guide</a></li>
+          <li><a href="reference.html">Reference</a></li>
+          <li><a href="vectors.html">Test vectors</a></li>
+          <li><a href="validator.html">Payload validator</a></li>
+          <li><a href="changelog.html">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Related protocols</h2>
+        <p><img src="assets/stampchain-logo-480.svg" alt="" width="88" height="22" style="opacity:.75"></p>
+        <ul>
+          <li><a href="https://bitcoinuniverseio.github.io/src-20/">SRC-20, same carrier</a></li>
+          <li><a href="https://github.com/stampchain-io/btc_stamps">Bitcoin Stamps indexer</a></li>
+          <li><a href="https://stampchain.io/">Stampchain explorer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://docs.bitcoinuniverse.io">Documentation portal</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101">This repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/src-101/security/advisories/new">Report a vulnerability</a></li>
+          <li><a href="llms.txt">llms.txt</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon">
+      <p>Document version 2026.09.01. Lifecycle experimental. Rules verified against <code>stampchain-io/btc_stamps</code> 1.9.3.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+<script src="assets/validator.js"></script>
+</body>
+</html>
