@@ -1,0 +1,25 @@
+name: Site checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/site.js
+          node --check assets/validator.js
+      - name: Check structured data
+        run: |
+          python3 -m json.tool docs.manifest.json > /dev/null
+          python3 -m json.tool search-index.json > /dev/null
+          python3 -c "import xml.etree.ElementTree as ET; ET.parse('sitemap.xml')"
